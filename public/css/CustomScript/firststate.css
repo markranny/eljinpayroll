@@ -1,0 +1,43 @@
+.float-right{
+    float: right;
+  padding-left: 20px;
+  }
+  .table-csv{
+    background: #00700a !important;
+    color: #ffff !important;
+    margin-top: 50px !important;
+  }
+  table.dataTable thead tr {
+      background-color: darkblue;
+      color: #ffff;
+      font-family:"Calibri", sans-serif;
+      font-weight: 900;
+      font-size: 12px;
+  }
+tr {
+  font-family:"Calibri", sans-serif;
+  font-size: 12px;
+  }
+    .msg-container{
+    position:absolute;
+    bottom:0;
+    right:20px;
+  }
+  .navbar > .container, .navbar > .container-fluid{
+    background-color: #000 !important;
+    color: #fff !important;
+  }
+  .LayoutTable{
+    margin-top: -30px !important;
+  }
+  .table-header{
+    background: url('../../images/table-header.png');
+  }
+
+  div.dataTables_wrapper div.dataTables_filter{
+    margin-top: -10px !important;
+  }
+  .btn-group, .btn-group-vertical {
+      position: absolute !important;
+      margin: -10px 1px !important;
+  }

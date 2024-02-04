@@ -1,0 +1,10 @@
+USE [BWPAYROLLTEMP]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_employee_name]    Script Date: 1/5/2023 2:36:39 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[sp_employee_name]
+AS
+select emp.employee_no, sched.employee_name, sched.date_sched, emp.day, emp.in1, emp.out1, emp.in2, emp.out2, emp.hours_work,  IIF(ROUND(emp.hours_work, 0) < 10, '8', 'PLEASE CHECK THIS ROW') as working_hour,  IIF(DATEPART(hour, cast(sched.time_sched as time)) - DATEPART(hour, cast(emp.in1 as time)) < 0, DATEPART(hour, cast(sched.time_sched as time)) - DATEPART(hour, cast(emp.in1 as time)), '0') as late_hr, IIF(DATEPART(hour, cast(sched.time_sched as time)) - DATEPART(hour, cast(emp.in1 as time)) <= 0, ABS(DATEPART(minute, cast(sched.time_sched as time)) - DATEPART(minute, cast(emp.in1 as time))), '0') as late_min, IIF(DATEPART(hour, cast(emp.in1 as time)) - DATEPART(hour, cast(sched.time_sched as time)) > 3, 'HALDAY', 'N/A') as halfday, IIF(DATEPART(hour, cast(sched.time_sched as time)) - DATEPART(hour, cast(emp.in1 as time)) > 2, 'UNDERTIME', 'N/A') as undertimer from employee_attendance_posts emp inner join employee_schedule_post sched on emp.employee_no = sched.employee_no and emp.date = sched.date_sched

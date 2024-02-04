@@ -1,0 +1,10 @@
+USE [BWPAYROLLTEMP]
+GO
+/****** Object:  StoredProcedure [dbo].[sp_employee_name]    Script Date: 1/5/2023 11:28:08 AM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+ALTER PROCEDURE [dbo].[sp_employee_name]
+AS
+select distinct employee_no, concat(firstname, ' ', lastname) as empname from employees
