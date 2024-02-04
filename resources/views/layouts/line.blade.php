@@ -51,7 +51,7 @@
 
 
 			<div class="modal-body">
-                <form method="POST" action="{{ route('addline') }}" enctype="multipart/form-data" target="_blank">
+                <form method="POST" action="{{ route('addline') }}" enctype="multipart/form-data" >
                 @csrf  
 
             <div class="row">
