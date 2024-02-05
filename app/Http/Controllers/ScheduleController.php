@@ -120,7 +120,7 @@ class ScheduleController extends Controller
         {   
                 $statement = "
                 BULK INSERT dbo.employee_schedule_temps
-                FROM '//Progenx\PAYROLL SYSTEM\\".$file."'
+                FROM '//Progenx\PAYROLL SYSTEM\Schedule\\".$file."'
                 WITH
                 (
                 FIRSTROW = 2,   

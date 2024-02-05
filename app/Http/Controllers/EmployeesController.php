@@ -474,7 +474,7 @@ class EmployeesController extends Controller
         if($count < 1)
         {
             
-            $filePath = '//Progenx\PAYROLL SYSTEM\\'.$file;
+            $filePath = '//Progenx\PAYROLL SYSTEM\Employees\\'.$file;
 
             DB::table('employees_detail_temps')->truncate();
             /* DB::statement("BULK INSERT dbo.employees_detail_temps

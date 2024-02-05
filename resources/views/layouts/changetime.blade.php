@@ -3,7 +3,6 @@
 
 <div class="card table-header">
         <div class="card-body">
-            <!-- Change Time Schedule -->
             <div class="float-right">
                 <div class="row">
                 <div class="col-2">
@@ -42,7 +41,7 @@
 </div>
        
 
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -60,6 +59,29 @@
 
 			<div class="modal-footer" id="delete-footer">
                  
+			</div>
+		</div>
+	</div>
+</div> -->
+
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="modal-title font-weight-bold">INFO</span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+
+			<div class="modal-body">
+                Please Contact IT/Support!!!
+			</div>
+
+
+			<div class="modal-footer" id="delete-footer">
 			</div>
 		</div>
 	</div>
@@ -208,9 +230,15 @@ function loadData() {
         });
     }
  
+    //function setDeleteButton(id){
+        //$("#delete-footer").html(`
+        //<button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteFunction(${id})">Delete</button>   
+        //<button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+        //`);
+    //} 
+
     function setDeleteButton(id){
-        $("#delete-footer").html(`
-        <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteFunction(${id})">Delete</button>   
+        $("#delete-footer").html(` 
         <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
         `);
     

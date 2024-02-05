@@ -207,7 +207,7 @@ class AttendanceController extends Controller
                 $statement = "
 
                 BULK INSERT dbo.employee_upload_attendances
-                FROM '//Progenx\PAYROLL SYSTEM\\".$file."'
+                FROM '//Progenx\PAYROLL SYSTEM\Attendance\\".$file."'
                 WITH
                 (
                 FIRSTROW = 2,
