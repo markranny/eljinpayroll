@@ -241,7 +241,6 @@ function loadData() {
         $("#delete-footer").html(` 
         <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
         `);
-    
     } 
 
     function deleteFunction(id){
@@ -273,7 +272,7 @@ function loadData() {
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>`);
+                </div>`);VBNM,
             }
         });
     }
