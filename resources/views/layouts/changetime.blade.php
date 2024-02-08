@@ -24,8 +24,7 @@
                         <th>Employeeattendanceid</th>
                         <th>Employee_no</th>
                         <th>Employee_name</th>
-                        <th>IN
-                        </th>
+                        <th>IN</th>
                         <th>OUT</th>
                         <th>Date</th>
                         <th>Action</th>
@@ -272,7 +271,7 @@ function loadData() {
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                </div>`);VBNM,
+                </div>`);
             }
         });
     }

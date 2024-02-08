@@ -69,7 +69,7 @@ class SlvlController extends Controller
     public function addslvl(Request $request)
     {
         
-        /* $employee_no = request('employee_no'); */
+        //SET REQUEST VARIABLE
         $employeeattendanceid = request('employeeattendanceid');
         $employee_name = request('employee_name');
         $datesched = request('datesched');
@@ -77,25 +77,31 @@ class SlvlController extends Controller
         $status = request('status');
         $remarks = request('remarks');
 
+        //GET EMPLOYEENAME
         $employee_data = DB::table('employees')
         ->select('employee_no')
         ->where('fullname', $employee_name)
         ->first();
 
+        //SET EMPLOYEENO BASED ON EMPLOYEEDATA
         $employee_no = $employee_data->employee_no;
 
+        //SET DAY FORMAT USING CARBON
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
         $getyear = Carbon::parse($datesched)->format('Y');
 
+        //GET 1ST AND 2ND PERIOD OF DATA
         if((int)$getday < 15){
             $getperiod = "1st Period";
         }else{
             $getperiod = "2nd Period";
         }
 
+
         try{
 
+                //GET SLVL, VL LIMIT
                 $sllimit = DB::table('sickleave')
                 ->where("employee_no", "=", $employee_no)
                 ->where("modifieddate", "=", $datesched)
@@ -106,19 +112,25 @@ class SlvlController extends Controller
                 ->where("modifieddate", "=", $datesched)
                 ->count();
 
+                //SET 10 LIMIT OF VL
                 if($vllimit < 11){
 
-
+                //SET 10 LIMIT OF SLVL
                 if($sllimit < 11){
 
+                //GET SLVL DATA
                 $filter = DB::table('slvls')
                 ->where("employee_no", "=", $employee_no)
                 ->where("date_sched", "=", $datesched)
                 ->count();
 
+                //FILTER IF SLVL IS EXIST
                 if($filter<1){
-                    //$employeeattendanceid != null && 
+
+                    //FILTER IF DATA IS NOT ALREADY EXIST
                     if($employee_no != null && $employee_name != null && $type != null && $status != null){
+
+                        //INSERT DATA TO SLVL TABLE
                         $update = new slvls();
                         $update->employeeattendanceid   =   request('employeeattendanceid');
                         $update->employee_no   =   $employee_no;
@@ -132,13 +144,14 @@ class SlvlController extends Controller
                         $update->period = $getperiod;
                         $update->save();
 
+                        //LOGS
                         Log::info('Add SLVL');
-
                         $statuslogs = "
                         INSERT INTO statuslogs (linecode, functions, modifieddate) values ('SLVL', 'Add SLVL', getdate())
                         ";
                         DB::statement($statuslogs);
 
+                        //SET VARIABLE OF EMPLOYEEATTENDANCEID 
                         $employeeattendanceid = request('employeeattendanceid');
 
                         /* $updateattendance1 = "
