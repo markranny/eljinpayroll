@@ -106,7 +106,7 @@ class OvertimeController extends Controller
                 $update->working_schedule   =   request('datesched');
                 $update->ot_in   =   request('timein');
                 $update->ot_out   =   request('timeout');
-                $update->ot_hrs   =   $timetotal * 1.3;
+                $update->ot_hrs   =   $timetotal;
                 $update->remarks   =   request('remarks');
                 $update->month   =   $getmonth;
                 $update->year   = $getyear;
@@ -133,7 +133,8 @@ class OvertimeController extends Controller
                 DB::table('employee_attendance_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date', $datesched)
-                ->update(['overtime' => DB::raw("{$timetotal} * 1.3")]);
+                /* ->update(['overtime' => DB::raw("{$timetotal} * 1.3")]); */
+                ->update(['overtime' => DB::raw("{$timetotal}")]);
 
 
                 Log::info('Add Overtime to employee_attendance_posts table');
@@ -243,7 +244,7 @@ class OvertimeController extends Controller
                     'working_schedule' => $datesched,
                     'ot_in' => $timein,
                     'ot_out' => $timeout,
-                    'ot_hrs' => $timetotal * 1.3,
+                    'ot_hrs' => $timetotal,
                     'remarks'   =>  $remarks,
                     'month'   =>  $getmonth,
                     'year'   =>  $getyear,
@@ -254,7 +255,7 @@ class OvertimeController extends Controller
                 DB::table('employee_attendance_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date', $datesched)
-                ->update(['overtime' => DB::raw("{$timetotal} * 1.3")]);
+                ->update(['overtime' => DB::raw("{$timetotal}")]);
 
                 return response()->json(['message' => 'success']);
 

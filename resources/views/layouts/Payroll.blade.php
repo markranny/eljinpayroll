@@ -64,10 +64,15 @@
                     <div class="card-body table-responsive">
                         
                         <?php 
+                        if($data->basic_pay > 0){
+                            $basic =  $data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays;
+                            $basicpay =  ($data->pay_rate * ($data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays));
+                        }else{
+                            $basic =  0;
+                            $basicpay =  0;
+                        }
 
-                        $basic =  $data->days - $data->slvl - $data->holiday;
-
-                        $basicpay =  $data->basic_pay - $data->slvl_amount - $data->holiday_amount;
+                        
                         
                         ?>
                         <form method="get" action="/" class="form-horizontal">
@@ -99,10 +104,10 @@
                                         <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
                                     </div>
                                 </div>
-                                <label class="col-sm-2 col-form-label">Total Hrs</label>
+                                <label class="col-sm-2 col-form-label">Days</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->slvl }}" readonly>
+                                        <input type="text" class="form-control" value="{{ $data->slvl_hrs }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Amount</label>
@@ -113,14 +118,36 @@
                                 </div>
                             </div>
 
+                            <?php if($data->holiday_percent == "100"){$totalholiday = $data->pay_rate * 1;}else{$totalholiday = $data->pay_rate * 2;}?>
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label">Holiday</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-form-label">%</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ $data->holiday_percent}}" readonly>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-form-label">Amount</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ $data->holiday_amount}}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="row">
                                 <label class="col-sm-2 col-form-label">Off Day</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->offdays }}" readonly>
+                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
                                     </div>
                                 </div>
-                                <label class="col-sm-2 col-form-label">Total Hrs</label>
+                                <label class="col-sm-2 col-form-label">Days</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <input type="text" class="form-control" value="{{ $data->offdays }}" readonly>
@@ -134,7 +161,7 @@
                                 </div>
                             </div>
 
-                            <?php $ot = $data->pay_rate / 8; ?>
+                            <?php $ot = ($data->pay_rate / 8) * 1.25 * 1; ?>
                             <div class="row">
                                 <label class="col-sm-2 col-form-label">OT Pay</label>
                                 <div class="col-sm-2">
@@ -143,108 +170,20 @@
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Total Hrs</label>
-                                <?php if($data->ot_hrs == "")
-                                {?>
-
                                 <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="0" readonly>
-                                    </div>
-                                </div>
-
-                                <?php 
-                                }else{?>
-                                    <div class="col-sm-2">
                                     <div class="form-group">
                                         <input type="text" class="form-control" value="{{ $data->ot_hrs }}" readonly>
                                     </div>
                                 </div>
-                                    <?php } ?>
-                                <label class="col-sm-2 col-form-label">Amount</label>
-                                <?php if($data->ot_hrs == "")
-                                {?>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="0" readonly>   
-                                    </div>
-                                </div>
-                                <?php 
-                                }else{?>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->ot_amount }}" readonly>   
-                                    </div>
-                                </div>
-                                <?php } ?>
-                            </div>
-
-                            <?php $offset = $data->pay_rate / 8; ?>
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label">Offset</label>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $offset ?>" readonly>
-                                    </div>
-                                </div>
-                                <label class="col-sm-2 col-form-label">Total Hrs</label>
-                                <?php if($data->ot_hrs == "")
-                                {?>
-
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="0" readonly>
-                                    </div>
-                                </div>
-
-                                <?php 
-                                }else{?>
-                                    <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->ot_hrs }}" readonly>
-                                    </div>
-                                </div>
-                                    <?php } ?>
-                                <label class="col-sm-2 col-form-label">Amount</label>
-                                <?php if($data->offset_amount == "")
-                                {?>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="0" readonly>
-                                    </div>
-                                </div>
-                                <?php 
-                                }else{?>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->offset_amount }}" readonly>
-                                    </div>
-                                </div>
-                                <?php } ?>
-                            </div>
-                            
-                            <?php if($data->holiday_percent == "100"){$totalholiday = $data->pay_rate * 1;}else{$totalholiday = $data->pay_rate * 2;}?>
-                            <div class="row">
-                                <label class="col-sm-2 col-form-label">Holiday</label>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
-                                    </div>
-                                </div>
-                                <label class="col-sm-2 col-form-label">Total Hrs</label>
-                                <div class="col-sm-2">
-                                    <div class="form-group">
-                                        <input type="text" class="form-control" value="-" readonly>
-                                    </div>
-                                </div>
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $totalholiday ?>" readonly>
+                                        <input type="text" class="form-control" value="{{ $data->ot_amount }}" readonly>
                                     </div>
                                 </div>
                             </div>
 
-                            <?php $nightdif = $data->pay_rate * 0.10; ?>
+                            <?php $nightdif = ($data->pay_rate / 8) * 0.10 * 8; ?>
                             <div class="row">
                                 <label class="col-sm-2 col-form-label">Night Diff</label>
                                 <div class="col-sm-2">
@@ -262,6 +201,28 @@
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <input type="text" class="form-control" value="{{ $data->nightdif_amount }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <?php $ctlaterate = ($data->pay_rate / 8); ?>
+                            <div class="row">
+                                <label class="col-sm-2 col-form-label">CTLate</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="<?php echo $ctlaterate ?>" readonly>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-form-label">Total Hrs</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ $data->ctlate }}" readonly>
+                                    </div>
+                                </div>
+                                <label class="col-sm-2 col-form-label">Amount</label>
+                                <div class="col-sm-2">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ $data->ctlate_amount }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -311,10 +272,15 @@
                             </div>
                         </form>
 
-                            <?php $totalearnings = ($data->basic_pay + $data->ot_amount + $data->offdays_amount + $data->holiday_amount + $data->nightdif_amount + $data->slvl_amount + $data->ob_amount) - ($data->late_amount - $data->udt_amount)?>
+                            <!-- <?php $totalearnings = ($data->basic_pay + $data->ot_amount + $data->offdays_amount + $data->holiday_amount + $data->nightdif_amount + $data->slvl_amount + $data->ob_amount) - ($data->late_amount - $data->udt_amount)?> -->
+
+                            <?php 
+                            $totalearnings = ($basicpay + $data->slvl_amount + $data->offdays_amount + $data->ot_amount + $data->holiday_amount + $data->nightdif_amount - $data->ctlate_amount - $data->late_amount - $data->udt_amount)
+                            ?>
+
                             <div class="row">
                                 <label class="col-sm-2 col-form-label" style = "color:green !important;">Total Earnings :</label>
-                                <div class="col-sm-4">
+                                <div class="col-sm-10">
                                     <div class="form-group">
                                         <input type="text" class="form-control" value = "<?php echo $totalearnings ?>" style = "background-color:green !important; color: #ffff !important;" readonly>
                                     </div>

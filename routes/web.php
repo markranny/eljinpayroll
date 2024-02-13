@@ -215,6 +215,13 @@ Route::get('changetime-list', 'CTController@changetimedata')->name('changetimeda
 Route::post('changetime', 'CTController@changetime')->name('changetime')->middleware('is_hr');
 
 /*--------------------------------------------------------------
+    # DASHBOARD
+--------------------------------------------------------------*/
+/* Route::get('', 'DBController@dbnav')->name('dashboardnav')->middleware('is_hr');
+Route::get('', 'DBController@dashboard')->name('dashboard')->middleware('is_hr'); */
+
+
+/*--------------------------------------------------------------
     # DEDUCTION LIST
 --------------------------------------------------------------*/
 Route::get('deduction-list', 'HomeController@deductionlists')->name('deductionlists')->middleware('is_finance');

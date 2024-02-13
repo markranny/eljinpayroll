@@ -19,6 +19,7 @@ use App\retros_logs;
 use App\wos_logs;
 use App\set_holidays_logs;
 use App\employee_deductions;
+use App\employees;
 use App\changetimes;
 use DataTables;
 use Validator;
@@ -176,7 +177,9 @@ class HomeController extends Controller
     
     public function index()
     {
-        return view('home');
+        
+        $count = Employees::count();
+        return view('home', compact('count'));
     }
 
     public function saccplugin()
