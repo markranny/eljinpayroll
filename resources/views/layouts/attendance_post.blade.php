@@ -28,7 +28,6 @@
                         <th class="flex" style="width: 200px !important;">EMPLOYEE_NAME</th>
                         <th class="flex" style="width: 200px !important;">NO_OF_DAYS</th>
                         <th class="flex" style="width: 200px !important;">WORKING_HRS</th>
-                        <th class="flex" style="width: 200px !important;">REG_DAYS</th>
                         <th class="flex" style="width: 200px !important;">ABSENT</th>
                         <th class="flex" style="width: 200px !important;">MINS_LATE</th>
                         <th class="flex" style="width: 200px !important;">UDT_HRS</th>

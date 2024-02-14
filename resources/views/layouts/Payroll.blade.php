@@ -275,7 +275,7 @@
                             <!-- <?php $totalearnings = ($data->basic_pay + $data->ot_amount + $data->offdays_amount + $data->holiday_amount + $data->nightdif_amount + $data->slvl_amount + $data->ob_amount) - ($data->late_amount - $data->udt_amount)?> -->
 
                             <?php 
-                            $totalearnings = ($basicpay + $data->slvl_amount + $data->offdays_amount + $data->ot_amount + $data->holiday_amount + $data->nightdif_amount - $data->ctlate_amount - $data->late_amount - $data->udt_amount)
+                            $totalearnings = ($basicpay + $data->slvl_amount + $data->offdays_amount + $data->ot_amount + $data->holiday_amount + $data->nightdif_amount + $data->ctlate_amount + $data->late_amount + $data->udt_amount)
                             ?>
 
                             <div class="row">
@@ -620,7 +620,7 @@
                                 <?php }?>
                             </div>
 
-                            <?php $net = $totalearnings - ($totalcontri + $totaldeduc) ?>
+                            <?php $net = $totalearnings - ($totalcontri + $totaldeduc + $data->ctlate_amount + $data->late_amount + $data->udt_amount) ?>
                             <div class="row">
                                 <label class="col-sm-1 col-form-label" style = "color:green !important;">NET :</label>
                                 <div class="col-sm-10">

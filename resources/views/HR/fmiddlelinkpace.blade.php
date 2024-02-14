@@ -1,44 +1,57 @@
+<!--=========================================================
+ AUTHOR: MARK RANNY AGLAPAY
+=========================================================-->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>
-    BW PAYROLL SYSTEM
-  </title>
+
+    <title>
+      BW PAYROLL SYSTEM - EMPLOYEESINFO
+    </title>
+
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-  <link href="../../assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="../../css/MaterialPlugins/googleapis.css" />
   <link rel="stylesheet" href="../../css/MaterialPlugins/font-awesome.min.css">
+  <link href="../../assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="../../css/CustomScript/firststate.css"/>
   <script src="../../js/MaterialPlugins/jquery.min.js"></script>
+
 </head>
 
 <body class="">
   <div class="wrapper ">
     <div class="sidebar" data-color="rose" data-background-color="black" data-image="../../assets/img/sidebar-3.jpg">
 
-    <div class="logo"><a href="#" class="simple-text logo-mini">
+      <div class="logo"><a href="#" class="simple-text logo-mini">
           BW
         </a>
         <a href="{{ route('home') }}" class="simple-text logo-normal">
           PAYROLL SYSTEM
-        </a></div>
-      <div class="sidebar-wrapper">
-        <div class="user">
-          <div class="photo">
-            <img src="../assets/img/faces/eljin.jpg" />
-          </div>
-          <div class="user-info">
+        </a>
+      </div>
+
+        <div class="sidebar-wrapper">
+          <div class="user">
+
+            <div class="photo">
+              <img src="../../assets/img/faces/eljin.jpg" />
+            </div>
+
+            <div class="user-info">
             <a data-toggle="collapse" href="#collapseExample" class="username">
               <span>
               Welcome back, {{ Auth::user()->username }}!, </br> Have A Nice Day!
                 <b class="caret"></b>
               </span>
             </a>
+
             <div class="collapse" id="collapseExample">
               <ul class="nav">
                 <li class="nav-item">
@@ -86,7 +99,7 @@
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{{ route('ienav') }}">
                     <span class="sidebar-mini"> EL </span>
                     <span class="sidebar-normal"> View Inactive Employees </span>
                   </a>
@@ -152,13 +165,12 @@
                     <span class="sidebar-normal"> Payroll </span>
                   </a>
                 </li>
-                <li class="nav-item ">
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('payrolllistnav') }}">
                     <span class="sidebar-mini"> SC </span>
                     <span class="sidebar-normal"> Set Salary </span>
                   </a>
-                </li>
-                
+                </li> -->
               </ul>
             </div>
           </li>
@@ -174,16 +186,10 @@
             </a>
             <div class="collapse" id="componentsExamples">
               <ul class="nav">
-                <li class="nav-item ">
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('holidaynav') }}">
                     <span class="sidebar-mini"> SH </span>
                     <span class="sidebar-normal"> Set Holidays (HR) </span>
-                  </a>
-                </li>
-                <!-- <li class="nav-item ">
-                  <a class="nav-link" href="#">
-                    <span class="sidebar-mini"> HH </span>
-                    <span class="sidebar-normal"> View Holiday101 (HR) </span>
                   </a>
                 </li> -->
                 <li class="nav-item ">
@@ -220,7 +226,7 @@
                   <p> Overtime </p>
                 </a>
               </li>
-                <li class="nav-item ">
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('offsetnav') }}">
                     <i class="material-icons">schedule</i>
                     <p> Offset (PER HOUR) </p>
@@ -231,11 +237,17 @@
                     <i class="material-icons">schedule</i>
                     <p> Offset (WHOLE DAY) </p>
                   </a>
-                </li>
+                </li> -->
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('changeoffnav') }}">
                     <i class="material-icons">pending_actions</i>
                     <p> Change Schedule </p>
+                  </a>
+                </li>
+                <li class="nav-item ">
+                  <a class="nav-link" href="{{ route('changetimenav') }}">
+                    <i class="material-icons">pending_actions</i>
+                    <p> Change Time Sched</p>
                   </a>
                 </li>
                 <li class="nav-item ">
@@ -272,19 +284,19 @@
             <div class="collapse" id="formsExampless">
               <ul class="nav">
                 <li class="nav-item ">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{{ route('linenav') }}">
                     <span class="sidebar-mini"> LS </span>
                     <span class="sidebar-normal"> Line/Section</span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="{{ route('attreport') }}">
+                  <a class="nav-link" href="{{ route('rankfilenav') }}">
                     <span class="sidebar-mini"> RF </span>
                     <span class="sidebar-normal"> Rank File </span>
                   </a>
                 </li>
                 <li class="nav-item ">
-                  <a class="nav-link" href="{{ route('importdatanav') }}">
+                  <a class="nav-link" href="{{ route('depnav') }}">
                     <span class="sidebar-mini"> DP </span>
                     <span class="sidebar-normal"> Department</span>
                   </a>
@@ -359,7 +371,7 @@
             </a>
             <div class="collapse" id="reports">
               <ul class="nav">
-              <li class="nav-item ">
+              <!-- <li class="nav-item ">
                 <a class="nav-link" href="#">
                   <i class="material-icons">summarize</i>
                   <p> PAYROLL ENTRY </p>
@@ -424,7 +436,7 @@
                   <i class="material-icons">summarize</i>
                   <p> UNIONS </p>
                 </a>
-              </li>
+              </li> -->
               </ul>
             </div>
           </li> 
@@ -440,27 +452,6 @@
           </li>
           @endif
 
-          <!-- <li class="nav-item ">
-            <a class="nav-link" href="404/dist/index.html">
-              <i class="material-icons">receipt</i>
-              <p> Payslip </p>
-            </a>
-          </li> -->
-
-          <!-- <li class="nav-item ">
-            <a class="nav-link" href="#">
-              <i class="material-icons">storage</i>
-              <p> Database </p>
-            </a>
-          </li> -->
-
-          <!-- <li class="nav-item ">
-            <a class="nav-link" href="404/dist/index.html">
-              <i class="material-icons">transform</i>
-              <p> Adjustment </p>
-            </a>
-          </li> -->
-
           @if (Auth::user()->role == 'ADMIN')
           <li class="nav-item ">
             <a class="nav-link" href="404/dist/index.html">
@@ -471,7 +462,7 @@
           @endif
 
           <li class="nav-item ">
-            <a class="nav-link" href="404/dist/index.html">
+            <a class="nav-link" href="https://ecticketph.com/login">
               <i class="material-icons">contact_support</i>
               <p> Service </p>
             </a>

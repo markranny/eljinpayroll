@@ -1,61 +1,63 @@
+<!--=========================================================
+ AUTHOR: MARK RANNY AGLAPAY
+=========================================================-->
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+
   <meta charset="utf-8" />
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-  <title>
-    BW PAYROLL SYSTEM - Attendance Details
-  </title>
+
+    <title>
+      BW PAYROLL SYSTEM - EMPLOYEESINFO
+    </title>
+
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
-  <link rel="stylesheet" type="text/css" href="css/MaterialPlugins/googleapis.css" />
-  <link rel="stylesheet" href="css/MaterialPlugins/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="../../css/MaterialPlugins/googleapis.css" />
+  <link rel="stylesheet" href="../../css/MaterialPlugins/font-awesome.min.css">
   <link href="../../assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="../../css/CustomScript/firststate.css"/>
+  <script src="../../js/MaterialPlugins/jquery.min.js"></script>
 
 </head>
 
 <body class="">
   <div class="wrapper ">
-    <div class="sidebar" data-color="rose" data-background-color="black" data-image="../../assets/img/sidebar-1.jpg">
+    <div class="sidebar" data-color="rose" data-background-color="black" data-image="../../assets/img/sidebar-3.jpg">
 
-    <div class="logo"><a href="#" class="simple-text logo-mini">
+      <div class="logo"><a href="#" class="simple-text logo-mini">
           BW
         </a>
-        <a href="#" class="simple-text logo-normal">
+        <a href="{{ route('home') }}" class="simple-text logo-normal">
           PAYROLL SYSTEM
-        </a></div>
-      <div class="sidebar-wrapper">
-        <div class="user">
-          <div class="photo">
-          <img src="../../assets/img/faces/eljin.jpg" />
-          </div>
-          <div class="user-info">
+        </a>
+      </div>
+
+        <div class="sidebar-wrapper">
+          <div class="user">
+
+            <div class="photo">
+              <img src="../../assets/img/faces/eljin.jpg" />
+            </div>
+
+            <div class="user-info">
             <a data-toggle="collapse" href="#collapseExample" class="username">
               <span>
               Welcome back, {{ Auth::user()->username }}!, </br> Have A Nice Day!
                 <b class="caret"></b>
               </span>
             </a>
+
             <div class="collapse" id="collapseExample">
               <ul class="nav">
                 <li class="nav-item">
-                  <a class="nav-link" href="#">
-                    <span class="sidebar-mini"> MY </span>
-                    <span class="sidebar-normal"> My Profile </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="404/dist/index.html">
                     <span class="sidebar-mini"> ED </span>
                     <span class="sidebar-normal"> Edit Profile </span>
-                  </a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">
-                    <span class="sidebar-mini"> SE </span>
-                    <span class="sidebar-normal"> Settings </span>
                   </a>
                 </li>
                 <li class="nav-item">
@@ -460,7 +462,7 @@
           @endif
 
           <li class="nav-item ">
-            <a class="nav-link" href="https://mammoth-capable-broadly.ngrok-free.app/">
+            <a class="nav-link" href="https://ecticketph.com/login">
               <i class="material-icons">contact_support</i>
               <p> Service </p>
             </a>
@@ -520,9 +522,8 @@
         <div class="content">
           <div class="container-fluid">
 
-    <div class="card">
+    <div class="card table-header">
         <div class="card-body">
-            Details
             <div class="float-right">
                 <div class="row">
                 <div class="col-2">
@@ -834,7 +835,7 @@
 
     scrollX: true,
 
-    dom: 'Bfrtp',
+    dom: 'lBfrtp',
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 

@@ -170,7 +170,7 @@ class HomeController extends Controller
     --------------------------------------------------------------*/
     public function empplugin()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/employee_details.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat");
         return view('HR.Employee_infos_nav');
     }
 
@@ -178,56 +178,56 @@ class HomeController extends Controller
     public function index()
     {
         
-        $count = Employees::count();
-        return view('home', compact('count'));
+        $empcount = Employees::count();
+        return view('home', compact('empcount'));
     }
 
     public function saccplugin()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/sacc.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/sacc.bat");
         return view('home');
     }
 
     public function edtrplugin()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/edtr.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/edtr.bat");
         return view('home');
     }
 
     public function attlist()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/attendance_checking.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/attendance_checking.bat");
         return view('HR.Import_Attendance');
     }
 
     public function attendancepostsplugin()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/attendance-list-plugin.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/attendance-list-plugin.bat");
         /* return view('HR.attendance_report_nav'); */
         return view('home');
     }
 
     public function deductions()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/employee_deductions.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_deductions.bat");
         return view('home');
     }
 
     public function benefits()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/employee_benefits.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_benefits.bat");
         return view('home');
     }
 
     public function Fattendance()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/attendance-final-posts.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/attendance-final-posts.bat");
         return view('home');
     }
 
     public function fixed()
     {
-        exec("C:/inetpub/BWPAYROLLSYS/plugins/endtask.bat");
+        exec("C:/BWPAYROLL SYSTEM/PLUGINS/endtask.bat");
         return view('HR.Import_Attendance');
     }  
 

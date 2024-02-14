@@ -37,8 +37,6 @@ $(function () {
 
       {data: 'working_hours', name: 'working_hours'},
 
-      {data: 'no_days_sched', name: 'no_days_sched'},
-
       {data: 'absent', name: 'absent'},
 
       {data: 'minutes_late', name: 'minutes_late'},
@@ -47,7 +45,7 @@ $(function () {
 
       {data: 'nightdif', name: 'nightdif'},
 
-      {data: 'holiday', name: 'holiday'},
+      {data: 'holiday_hrs', name: 'holiday_hrs'},
 
       {data: 'holiday_percent', name: 'holiday_percent'},
 
@@ -59,7 +57,7 @@ $(function () {
 
       {data: 'ob', name: 'ob'},
 
-      {data: 'slvl', name: 'slvl'},
+      {data: 'slvl_hrs', name: 'slvl_hrs'},
 
       {data: 'month', name: 'month'},
 
