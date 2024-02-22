@@ -24,7 +24,6 @@
                                 <th>Date</th>
                                 <th>Time</th>
                                 <th>Change_Schedule</th>
-                                <th>Actions</th>
                                 </tr>
                             </thead>
                         </table>
@@ -87,19 +86,6 @@
             {data: 'timess', name: 'timess'},
 
             {data: 'change_sched', name: 'change_sched'},
-
-            {
-                data: 'id',
-                name: 'id',
-                orderable: false,
-                searchable: false,
-                render: function (data, type, full, meta) {
-                    return `
-                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.dept_code}', '${full.department}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data})">DELETE</button>    
-                    `;
-                }
-            } 
 
     ]
 

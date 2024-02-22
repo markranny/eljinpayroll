@@ -22,6 +22,7 @@
   <link href="assets/css/material-dashboard.css?v=2.1.2" rel="stylesheet" />
   <link rel="stylesheet" type="text/css" href="css/CustomScript/firststate.css"/>
   <script src="js/MaterialPlugins/jquery.min.js"></script>
+  <script src="js/chartjs/chart.js"></script>
 
 </head>
 
@@ -135,7 +136,7 @@
                   <!-- <a class="nav-link" href="{{ route('attreport') }}"> -->
                   <a class="nav-link" href="{{ route('attendancepostsplugin') }}">
                     <span class="sidebar-mini"> EC </span>
-                    <span class="sidebar-normal"> DTR CHECKER </span>
+                    <span class="sidebar-normal"> DRAFT </span>
                   </a>
                 </li>
                 <li class="nav-item ">
@@ -310,7 +311,7 @@
           @if (Auth::user()->role == 'FINANCE' || Auth::user()->role == 'ADMIN')
           <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#reports123">
-              <i class="material-icons">loyalty</i>
+              <i class="material-icons">medical_information</i>
               <p> Contributions
                 <b class="caret"></b>
               </p>
@@ -319,13 +320,13 @@
               <ul class="nav">
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('benefits') }}">
-                  <i class="material-icons">summarize</i>
+                  <i class="material-icons">medical_information</i>
                   <p> Contribution </p>
                 </a>
               </li>
               <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
+                <a class="nav-link" href="{{ route('contributionlists') }}">
+                  <i class="material-icons">medical_information</i>
                   <p> Contribution List </p>
                 </a>
               </li>
@@ -346,13 +347,13 @@
               <ul class="nav">
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('deductions') }}">
-                  <i class="material-icons">summarize</i>
+                  <i class="material-icons">trending_down</i>
                   <p> Deductions </p>
                 </a>
               </li>
               <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
+                <a class="nav-link" href="{{ route('deductionlists') }}">
+                  <i class="material-icons">trending_down</i>
                   <p> Deduction List </p>
                 </a>
               </li>
@@ -371,37 +372,26 @@
             </a>
             <div class="collapse" id="reports">
               <ul class="nav">
+              <li class="nav-item ">
+                <a class="nav-link" href="{{ route('debitsummarynav') }}">
+                  <i class="material-icons">credit_score</i>
+                  <p> Debit Summary </p>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="{{ route('creditsummarynav') }}">
+                  <i class="material-icons">money_off_csred</i>
+                  <p> Credit Summary </p>
+                </a>
+              </li>
+              <li class="nav-item ">
+                <a class="nav-link" href="#">
+                  <i class="material-icons">receipt_long</i>
+                  <p> Transaction Summary </p>
+                </a>
+              </li>
+              
               <!-- <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
-                  <p> PAYROLL ENTRY </p>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
-                  <p> VALE </p>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
-                  <p> EMPLOYEE CHARGE </p>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
-                  <p> MEAL CHARGE </p>
-                </a>
-              </li>
-              <li class="nav-item ">
-                <a class="nav-link" href="#">
-                  <i class="material-icons">summarize</i>
-                  <p> UNIFORM CHARGE </p>
-                </a>
-              </li>
-              <li class="nav-item ">
                 <a class="nav-link" href="#">
                   <i class="material-icons">summarize</i>
                   <p> SSS Loan </p>
@@ -446,7 +436,7 @@
           @if (Auth::user()->role == 'FINANCE' || Auth::user()->role == 'ADMIN')
           <li class="nav-item ">
             <a class="nav-link" href="404/dist/index.html">
-              <i class="material-icons">account_balance</i>
+              <i class="material-icons">credit_card</i>
               <p> 13th Month </p>
             </a>
           </li>

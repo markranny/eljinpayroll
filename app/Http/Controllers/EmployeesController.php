@@ -477,18 +477,10 @@ class EmployeesController extends Controller
             $filePath = '//Progenx\PAYROLL SYSTEM\Employees\\'.$file;
 
             DB::table('employees_detail_temps')->truncate();
-            /* DB::statement("BULK INSERT dbo.employees_detail_temps
-              FROM ?
-              WITH
-              (
-                FIRSTROW = 2,
-                FIELDTERMINATOR = ',', 
-                ROWTERMINATOR = '\n'
-              )", [$filePath]); */
 
               $statement = "
                 BULK INSERT dbo.employees_detail_temps
-                FROM '//Progenx\PAYROLL SYSTEM\\".$file."'
+                FROM '//Progenx\PAYROLL SYSTEM\Employees\\".$file."'
                 WITH
                 (
                 FIRSTROW = 2,

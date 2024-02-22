@@ -620,7 +620,9 @@
                                 <?php }?>
                             </div>
 
-                            <?php $net = $totalearnings - ($totalcontri + $totaldeduc + $data->ctlate_amount + $data->late_amount + $data->udt_amount) ?>
+                            <?php 
+                                $net = $totalearnings - ($totalcontri + $totaldeduc + $data->ctlate_amount + $data->late_amount + $data->udt_amount) 
+                            ?>
                             <div class="row">
                                 <label class="col-sm-1 col-form-label" style = "color:green !important;">NET :</label>
                                 <div class="col-sm-10">

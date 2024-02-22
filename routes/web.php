@@ -110,7 +110,7 @@ Route::get('attendance-report-page', 'AttendanceController@attreport')->name('at
 Route::get('attendance-report-data', 'AttendanceController@attreportdata')->name('attreportdata')->middleware('is_hr');
 Route::get('attendance-details/{employeeattendanceid}/{employee_no}', 'AttendanceController@attdetails')->name('attdetails')->middleware('is_hr');
 Route::get('filterdetails/{id}/{employee_no}', 'AttendanceController@attdetailsdata')->name('attdetailsdata')->middleware('is_hr');
-Route::get('attendance-list-page', 'AttendanceController@attlist')->name('attlist')->middleware('is_hr');
+Route::get('attendance-list-page', 'HomeController@attlist')->name('attlist')->middleware('is_hr');
 Route::get('attendance-data', 'AttendanceController@attlistdata')->name('attlistdata')->middleware('is_hr');
 Route::get('attendance-data-collection', 'AttendanceController@attlistdatacollection')->name('attlistdatacollection')->middleware('is_hr');
 Route::get('attendance', 'AttendanceController@attpostsnav')->name('attpostsnav')->middleware('is_hr');
@@ -220,6 +220,13 @@ Route::post('changetime', 'CTController@changetime')->name('changetime')->middle
 /* Route::get('', 'DBController@dbnav')->name('dashboardnav')->middleware('is_hr');
 Route::get('', 'DBController@dashboard')->name('dashboard')->middleware('is_hr'); */
 
+/*--------------------------------------------------------------
+    # SUMMARY
+--------------------------------------------------------------*/
+Route::get('debit-list', 'PayrollController@debitsummarynav')->name('debitsummarynav')->middleware('is_finance');
+Route::get('debit-data', 'PayrollController@debitsummarydata')->name('debitsummarydata')->middleware('is_finance');
+Route::get('credit-list', 'PayrollController@creditsummarynav')->name('creditsummarynav')->middleware('is_finance');
+Route::get('credit-data', 'PayrollController@creditsummarydata')->name('creditsummarydata')->middleware('is_finance');
 
 /*--------------------------------------------------------------
     # DEDUCTION LIST

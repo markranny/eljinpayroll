@@ -21,27 +21,28 @@
                 <table id="attendance" class="table table-striped table-no-bordered table-hover">
                     <thead>
                         <tr>
-                        <th class="flex" style="width: 200px !important;">ACTION</th>
-                        <th class="flex" style="width: 200px !important;">ID</th>
-                        <th class="flex" style="width: 200px !important;">ATTENDANCEID</th>
-                        <th class="flex" style="width: 200px !important;">EMPLOYEE_NO</th>
-                        <th class="flex" style="width: 200px !important;">EMPLOYEE_NAME</th>
-                        <th class="flex" style="width: 200px !important;">NO_OF_DAYS</th>
-                        <th class="flex" style="width: 200px !important;">WORKING_HRS</th>
-                        <th class="flex" style="width: 200px !important;">ABSENT</th>
-                        <th class="flex" style="width: 200px !important;">MINS_LATE</th>
-                        <th class="flex" style="width: 200px !important;">UDT_HRS</th>
-                        <th class="flex" style="width: 200px !important;">NIGHTDIF</th>
-                        <th class="flex" style="width: 200px !important;">HOLIDAY</th>
-                        <th class="flex" style="width: 200px !important;">HOLIDAY_PERCENT</th>
-                        <th class="flex" style="width: 200px !important;">OFFDAYS</th>
-                        <th class="flex" style="width: 200px !important;">OVERTIME</th>
-                        <th class="flex" style="width: 200px !important;">OFFSET</th>
-                        <th class="flex" style="width: 200px !important;">OB</th>
-                        <th class="flex" style="width: 200px !important;">SLVL</th>
-                        <th class="flex" style="width: 200px !important;">MONTH</th>
-                        <th class="flex" style="width: 200px !important;">YEAR</th>
-                        <th class="flex" style="width: 200px !important;">PERIOD</th>
+                        <th class="flex" style="width: 100px !important;">ACTION</th>
+                        <th class="flex" style="width: 100px !important;">ID</th>
+                        <th class="flex" style="width: 150px !important;">ATTENDANCEID</th>
+                        <th class="flex" style="width: 150px !important;">EMPLOYEE_NO</th>
+                        <th class="flex" style="width: 150px !important;">EMPLOYEE_NAME</th>
+                        <th class="flex" style="width: 150px !important;">REGULAR_DAYS</th>
+                        <th class="flex" style="width: 150px !important;">EARNED_DAYS</th>
+                        <th class="flex" style="width: 150px !important;">WORKING_HRS</th>
+                        <th class="flex" style="width: 150px !important;">ABSENT</th>
+                        <th class="flex" style="width: 150px !important;">CTLATE</th>
+                        <th class="flex" style="width: 150px !important;">MINS_LATE</th>
+                        <th class="flex" style="width: 150px !important;">UDT_HRS</th>
+                        <th class="flex" style="width: 150px !important;">NIGHTDIF</th>
+                        <th class="flex" style="width: 150px !important;">HOLIDAY</th>
+                        <th class="flex" style="width: 150px !important;">HOLIDAY_PERCENT</th>
+                        <th class="flex" style="width: 150px !important;">OFFDAYS</th>
+                        <th class="flex" style="width: 150px !important;">OVERTIME</th>
+                        <th class="flex" style="width: 150px !important;">OB</th>
+                        <th class="flex" style="width: 150px !important;">SLVL</th>
+                        <th class="flex" style="width: 150px !important;">MONTH</th>
+                        <th class="flex" style="width: 150px !important;">YEAR</th>
+                        <th class="flex" style="width: 150px !important;">PERIOD</th>
                         </tr>
                     </thead>
                 </table>

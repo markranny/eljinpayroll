@@ -1,3 +1,6 @@
+.input-group{
+  visibility: hidden !important;
+}
 .float-right{
     float: right;
   padding-left: 20px;
@@ -32,6 +35,11 @@ tr {
   }
   .table-header{
     background: url('../../images/table-header.png');
+  }
+
+  .table-footer{
+    background: black;
+    color:#fff;
   }
 
   div.dataTables_wrapper div.dataTables_filter{

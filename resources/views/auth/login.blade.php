@@ -81,6 +81,6 @@
     </div>
 </div>
 <div style="padding: 10px 10px; background: rgb(0, 1, 58) !important;  position: fixed; left: 0; bottom: 0; width: 100%; color: white;">
-<marquee direction="right">"Just as software needs regular updates, so does your skill set. Stay current, adapt, and keep evolving in the ever-changing workplace ecosystem."</marquee>
+<marquee direction="right">"Author: Mark Ranny Aglapay / Contactno: 09073912184 / https://ecticketph.com "</marquee>
 </div>
 @endsection

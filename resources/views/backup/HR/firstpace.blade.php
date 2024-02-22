@@ -168,7 +168,7 @@
                   <!-- <a class="nav-link" href="{{ route('attreport') }}"> -->
                   <a class="nav-link" href="{{ route('attendancepostsplugin') }}">
                     <span class="sidebar-mini"> EC </span>
-                    <span class="sidebar-normal"> DTR CHECKER </span>
+                    <span class="sidebar-normal"> DRAFT </span>
                   </a>
                 </li>
                 <li class="nav-item ">

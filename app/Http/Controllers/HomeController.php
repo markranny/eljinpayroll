@@ -170,14 +170,28 @@ class HomeController extends Controller
     --------------------------------------------------------------*/
     public function empplugin()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat");
-        return view('HR.Employee_infos_nav');
+        // Assuming your .bat file is located at the specified path
+        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat';
+
+        // Check if the .bat file exists
+        if (file_exists($batFilePath)) {
+            // Execute the .bat file using exec()
+            $output = exec('cmd /Z "'.$batFilePath.'"', $outputArray, $returnCode);
+
+            return view('HR.Employee_infos_nav');
+        } else {
+            // Handle case when the .bat file doesn't exist
+            dd('The .bat file does not exist.');
+        }  
+
+        /* exec("Z:/Bat Files/employee_details.bat");
+        return view('HR.Employee_infos_nav'); */
     }
 
     
     public function index()
     {
-        
+        $empcount = 0; // Initialize $empcount
         $empcount = Employees::count();
         return view('home', compact('empcount'));
     }
@@ -190,21 +204,53 @@ class HomeController extends Controller
 
     public function edtrplugin()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/edtr.bat");
-        return view('home');
+        // Assuming your .bat file is located at the specified path
+        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/edtr.bat';
+
+        // Check if the .bat file exists
+        if (file_exists($batFilePath)) {
+            // Execute the .bat file using exec()
+            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
+
+            return view('home');
+        } else {
+            // Handle case when the .bat file doesn't exist
+            dd('The .bat file does not exist.');
+        }  
     }
 
     public function attlist()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/attendance_checking.bat");
-        return view('HR.Import_Attendance');
+        // Assuming your .bat file is located at the specified path
+        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/attendance_checking.bat';
+
+        // Check if the .bat file exists
+        if (file_exists($batFilePath)) {
+            // Execute the .bat file using exec()
+            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
+
+            return view('HR.Import_Attendance');
+        } else {
+            // Handle case when the .bat file doesn't exist
+            dd('The .bat file does not exist.');
+        }  
     }
 
     public function attendancepostsplugin()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/attendance-list-plugin.bat");
-        /* return view('HR.attendance_report_nav'); */
-        return view('home');
+        // Assuming your .bat file is located at the specified path
+        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/attendance-list-plugin.bat';
+
+        // Check if the .bat file exists
+        if (file_exists($batFilePath)) {
+            // Execute the .bat file using exec()
+            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
+
+            return view('home');
+        } else {
+            // Handle case when the .bat file doesn't exist
+            dd('The .bat file does not exist.');
+        }  
     }
 
     public function deductions()
@@ -554,75 +600,73 @@ class HomeController extends Controller
 
     public function payrolllistdata(Request $request)
     {
-
-                $query = "DB::raw('cast(employees.pay_rate as float) + cast(emp_final_posts.ot_rendered as float) as gross')";
-                $payroll = DB::table('emp_final_posts')
-                ->distinct()
-                ->join('employees', 'emp_final_posts.employee_no', '=', 'employees.employee_no')
-                ->leftjoin('employee_contributions', 'employees.employee_no', '=', 'employee_contributions.employee_no', 'and', 'employee_contributions.month', '=', 'emp_final_posts.month')
-                ->leftjoin('employee_deductions', 'employees.employee_no', '=', 'employee_deductions.employee_no')
-                ->select('emp_final_posts.*','employees.*',
-                'employee_deductions.advance','employee_deductions.charge','employee_deductions.meal','employee_deductions.misc','employee_deductions.uniform','employee_deductions.bond_deposit','employee_deductions.mutual_charge',
-                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
-
-                DB::raw('
-                ROUND(
-                    (IIF(emp_final_posts.basic_pay is null, 0, cast(emp_final_posts.basic_pay as float))
-                    + 
-                    IIF(emp_final_posts.nightdif is null, 0, cast(emp_final_posts.nightdif as float))
-                    + 
-                    IIF(emp_final_posts.nightdif_amount is null, 0, cast(emp_final_posts.nightdif_amount as float))
-                    +
-                    IIF(emp_final_posts.holiday_amount is null, 0, cast(emp_final_posts.holiday_amount as float)) 
-                    +
-                    IIF(emp_final_posts.slvl_amount is null, 0, cast(emp_final_posts.slvl_amount as float)) 
-                    + 
-                    IIF(emp_final_posts.offdays is null, 0, cast(emp_final_posts.offdays as float)) 
-                    + 
-                    IIF(emp_final_posts.ot_amount is null, 0, cast(emp_final_posts.ot_amount as float)) 
-                    + 
-                    IIF(emp_final_posts.offset_amount is null, 0, cast(emp_final_posts.offset_amount as float)))
-                    
-                    -
-                    
-                    (IIF(emp_final_posts.late_amount is null, 0, cast(emp_final_posts.late_amount as float))
-                    +
-                    IIF(emp_final_posts.udt_amount is null, 0, cast(emp_final_posts.udt_amount as float))
-                    +
-                    IIF(employee_deductions.advance is null, 0, cast(employee_deductions.advance as float))
-                    +
-                    IIF(employee_deductions.charge is null, 0, cast(employee_deductions.charge as float))
-                    +
-                    IIF(employee_deductions.meal is null, 0, cast(employee_deductions.meal as float))
-                    +
-                    IIF(employee_deductions.misc is null, 0, cast(employee_deductions.misc as float))
-                    +
-                    IIF(employee_deductions.uniform is null, 0, cast(employee_deductions.uniform as float))
-                    +
-                    IIF(employee_deductions.bond_deposit is null, 0, cast(employee_deductions.bond_deposit as float))
-                    +
-                    IIF(employee_deductions.mutual_charge is null, 0, cast(employee_deductions.mutual_charge as float))
-                    +
-                    IIF(employee_contributions.sss_loan is null, 0, cast(employee_contributions.sss_loan as float))
-                    +
-                    IIF(employee_contributions.pag_ibig_loan is null, 0, cast(employee_contributions.pag_ibig_loan as float))
-                    +
-                    IIF(employee_contributions.mutual_loan is null, 0, cast(employee_contributions.mutual_loan as float))
-                    +
-                    IIF(employee_contributions.sss_prem is null, 0, cast(employee_contributions.sss_prem as float))
-                    +
-                    IIF(employee_contributions.pag_ibig_prem is null, 0, cast(employee_contributions.pag_ibig_prem as float))
-                    +
-                    IIF(employee_contributions.philhealth is null, 0, cast(employee_contributions.philhealth as float))
-                    
-                    
-                    ), 2)
-                    as gross
-                ')
-
+                $payroll = DB::table('emp_final_posts as a')
+                ->select(
+                    'a.employeeattendanceid',
+                    'a.employee_no',
+                    'a.employee_name',
+                    'a.department',
+                    'a.job_status',
+                    'a.rank_file',
+                    'a.day_needs',
+                    'a.days',
+                    DB::raw("FORMAT(cast(a.pay_rate as float) * 
+                        (cast(a.days as int) - cast(a.slvl_hrs as float)
+                        - cast(a.holiday_hrs as float) - cast(a.offdays as float))
+                        + cast(a.slvl_amount as float) + cast(a.offdays_amount as float)
+                        + cast(a.ot_amount as float) + cast(a.holiday_amount as float) + cast(a.nightdif_amount as float)
+                        + cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)
+                        + (cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float))
+                        + (cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float))
+                        + (cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as GrossAmount"),
+                    DB::raw("FORMAT(cast(a.pay_rate as float) * 
+                        (cast(a.days as int) - cast(a.slvl_hrs as float)
+                        - cast(a.holiday_hrs as float) - cast(a.offdays as float))
+                        + cast(a.slvl_amount as float) + cast(a.offdays_amount as float)
+                        + cast(a.ot_amount as float) + cast(a.holiday_amount as float) + cast(a.nightdif_amount as float)
+                        + cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)
+                        - (cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float))
+                        - (cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float))
+                        - (cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as NetAmount"),
+                    DB::raw("FORMAT((cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float)), 'F2') as TotalDeducAmount"),
+                    DB::raw("FORMAT((cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float)), 'F2') as TotalContriAmount"),
+                    DB::raw("FORMAT((cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as TotalOtherDeduc"),
+                    'a.basic_pay',
+                    'a.per_trip',
+                    'a.pertrip_amount',
+                    'a.ctlate_amount',
+                    'a.late_amount',
+                    'a.udt_amount',
+                    'a.nightdif_amount',
+                    'a.holiday_amount',
+                    'a.offdays_amount',
+                    'a.ot_amount',
+                    'a.slvl_amount',
+                    'a.ob_amount',
+                    'c.sss_loan',
+                    'c.pag_ibig_loan',
+                    'c.mutual_loan',
+                    'c.sss_prem',
+                    'c.pag_ibig_prem',
+                    'c.philhealth',
+                    'c.unions',
+                    'd.advance',
+                    'd.bond_deposit',
+                    'd.charge',
+                    'd.meal',
+                    'd.misc',
+                    'd.uniform',
+                    'd.bond_deposit',
+                    'd.mutual_charge',
+                    'a.month',
+                    'a.year',
+                    'a.period'
                 )
+                ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+                ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+                ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+                ->distinct()
                 ->get();
-
 
                 return DataTables::of($payroll)
 
