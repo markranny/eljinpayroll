@@ -289,13 +289,16 @@ class SlvlController extends Controller
     # DELETE SLVL
     --------------------------------------------------------------*/
 
-    public function delete_slvl($id){
+    public function delete_slvl($id, $employee_no, $date_sched){
         $tableName = 'slvls';
+        $DTR = 'employee_attendance_posts';
         $idToDelete = $id; 
         
         $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
-        if ($recordExists) {
+        $DTRrecords = DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->exists();
+        if ($recordExists && $DTRrecords) {
             DB::table($tableName)->where('id', $idToDelete)->delete();
+            DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->delete();
             
             return response()->json(['message' => 'success']);
         } else {

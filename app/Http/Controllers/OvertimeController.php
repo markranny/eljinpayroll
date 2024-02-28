@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\overtimes;
 use App\employees;
+use App\employee_attendance_posts;
 use App\overtimes_logs;
 use DataTables;
 use Validator;
@@ -36,7 +37,7 @@ class OvertimeController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -68,13 +69,19 @@ class OvertimeController extends Controller
         $datesched = request('datesched');
         $timein = request('timein');
         $timeout = request('timeout');
+        $remarks = request('remarks');
+        $ottypes = request('ottypes');
 
         $employee_data = DB::table('employees')
         ->select('employee_no')
         ->where('fullname', $employee_name)
         ->first();
 
-        $employee_no = $employee_data->employee_no;
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -95,12 +102,19 @@ class OvertimeController extends Controller
         ->where("employee_no", "=", $employee_no)
         ->where("working_schedule", "=", $datesched)
         ->count();
+    
+        $filter2 = DB::table('employee_attendance_posts')
+        ->where("employeeattendanceid", "=", $employeeattendanceid)
+        ->where("employee_no", "=", $employee_no)
+        ->where("date", "=", $datesched)
+        ->whereNotNull("overtime")
+        ->count();
+
 
         if($filter<1){
-           // $employeeattendanceid != null && 
-            if($employee_name != null &&  $datesched != null && $timein != null && $timeout != null){
+            if($employeeattendanceid != null && $employee_no != null && $employee_name != null &&  $datesched != null && $timein != null && $timeout != null && $remarks != null){
                 $update = new overtimes();
-                $update->employeeattendanceid   =   111;
+                $update->employeeattendanceid   =   $employeeattendanceid;
                 $update->employee_no   =   $employee_no;
                 $update->employee_name   =   $employee_name;
                 $update->working_schedule   =   request('datesched');
@@ -124,17 +138,45 @@ class OvertimeController extends Controller
                 $timesum2 = Carbon::parse($request->timeout)->format('H');
                 $timetotal = (int)$timesum2 - (int)$timesum1;
 
-                /* $updateattendance = "
-                update employee_attendance_posts set overtime = $timetotal * 1.3 where employee_no = '$employee_no' and date = '$datesched'
-                ";
 
-                DB::statement($updateattendance); */
+                $filter3 = DB::table('overtimes as a')
+            ->leftJoin('employee_attendance_posts as b', 'a.employee_no', '=', 'b.employee_no')
+            ->where('b.date', '=', $datesched)
+            ->count();
 
+            if($filter3 == 0) { // Changed the condition to check if $filter3 equals zero
+                DB::table('employee_attendance_posts')->insert([
+                    'employeeattendanceid' => $employeeattendanceid,
+                    'employee_name' => $employee_name,
+                    'employee_no' => $employee_no,
+                    'date' => $datesched,
+                    'day' => 'RESTDAY OVERTIME',
+                    'schedin' => '00:00:00.0000000',
+                    'schedout' => '00:00:00.0000000',
+                    'in1' => $timein,
+                    'out2' => $timeout,
+                    'hours_work' => $timetotal,
+                    'working_hour' => $timetotal,
+                    'totalhrsneeds' => '0',
+                    'totalhrs' => '9',
+                    'totalhrsearned' => '9',
+                    'ctlate' => '0',
+                    'minutes_late' => '0',
+                    'udt' => '-',
+                    'udt_hrs' => '0',
+                    'nightdif' => '0',
+                    'overtime' => $timetotal,
+                    'period' => $getperiod,
+                    'status' => '0'
+                ]);
+            } else {
                 DB::table('employee_attendance_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date', $datesched)
-                /* ->update(['overtime' => DB::raw("{$timetotal} * 1.3")]); */
                 ->update(['overtime' => DB::raw("{$timetotal}")]);
+            }
+
+                
 
 
                 Log::info('Add Overtime to employee_attendance_posts table');
@@ -165,29 +207,47 @@ class OvertimeController extends Controller
 
     }
 
+
      /*--------------------------------------------------------------
     # DELETE OVERTIME
     --------------------------------------------------------------*/
 
-    public function delete_overtime($id){
-        $tableName = 'overtimes';
-        $idToDelete = $id; 
-        
-        $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
-        if ($recordExists) {
-            DB::table($tableName)->where('id', $idToDelete)->delete();
+    public function delete_overtime($id, $employee_no, $working_schedule) {
 
-            DB::table('employee_attendance_posts')
-                ->where('id', $id)
-                ->update([
-                    'overtime' => 0
-                ]);
-            
-            return response()->json(['message' => 'success']);
+        $employeeAttendanceCount = DB::table('employee_final_attendance_posts as a')
+            ->leftJoin('employee_attendance_posts as b', 'a.employeeattendanceid', '=', 'b.employeeattendanceid')
+            ->where('a.employee_no', $employee_no)
+            ->where('a.date', $working_schedule)
+            ->distinct()
+            ->count();
+
+            /* dd($employeeAttendanceCount); */
+    
+        if ($employeeAttendanceCount < 1) {
+            $tableName = 'overtimes';
+            $idToDelete = $id;
+    
+            // Check if record exists before deleting
+            $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
+            if ($recordExists) {
+                DB::table($tableName)->where('id', $idToDelete)->delete();
+    
+                // Assuming you want to update 'overtime' field in 'employee_attendance_posts' where ID is $idToDelete
+                DB::table('employee_attendance_posts')
+                    ->where('id', $idToDelete)
+                    ->update([
+                        'overtime' => 0
+                    ]);
+    
+                return response()->json(['message' => 'success']);
+            } else {
+                return response()->json(['message' => 'fail']);
+            }
         } else {
-            return response()->json(['message' => 'fail']);
+            return back()->with('error', 'The Data is already posted!');
         }
     }
+    
 
     /*--------------------------------------------------------------
     # UPDATE OVERTIME

@@ -49,3 +49,7 @@ tr {
       position: absolute !important;
       margin: -10px 1px !important;
   }
+  .card
+  {
+    border-bottom: 2px solid rgb(6, 0, 97);
+  }

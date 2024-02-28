@@ -85,6 +85,7 @@ Route::get('rankfile-list', 'EmployeesController@rankfiledata')->name('rankfiled
 Route::post('add-rankfile', 'EmployeesController@addrankfile')->name('addrankfile')->middleware('is_hr');
 Route::get('/delete/rankfile/{id}', 'EmployeesController@delete_rankfile')->name('delete_rankfile')->middleware('is_hr');
 Route::post('/update/rankfile/', 'EmployeesController@update_rankfile')->name('update_rankfile')->middleware('is_hr');
+
 /*--------------------------------------------------------------
     # SCHEDULE
 --------------------------------------------------------------*/
@@ -100,6 +101,7 @@ Route::get('clear-schedule', 'ScheduleController@clearS')->name('clearS')->middl
 Route::post('post-employees', 'ScheduleController@palS')->name('palS')->middleware('is_hr');
 Route::get('updatesched/{employee_no}', 'ScheduleController@updatesched')->name('updatesched')->middleware('is_hr');
 
+Route::post('ec-add-Schedule', 'ScheduleController@ecaddsched')->name('ecaddsched')->middleware('is_hr');
 Route::get('/delete/schedule/{id}', 'ScheduleController@delete_schedule')->name('delete_schedule')->middleware('is_hr');
 Route::post('/update/schedule/', 'ScheduleController@update_schedule')->name('update_schedule')->middleware('is_hr');
 
@@ -128,7 +130,7 @@ Route::get('autofix', 'AttendanceController@autofix')->name('autofix')->middlewa
 Route::get('overtime-page', 'OvertimeController@overtimenav')->name('overtimenav')->middleware('is_hr');
 Route::get('overtime-list', 'OvertimeController@overtimedata')->name('overtimedata')->middleware('is_hr');
 Route::post('add-overtime', 'OvertimeController@addovertime')->name('addovertime')->middleware('is_hr');
-Route::get('/delete/overtime/{id}', 'OvertimeController@delete_overtime')->name('delete_overtime')->middleware('is_hr');
+Route::get('/delete/overtime/{id}/{employee_no}/{working_schedule}', 'OvertimeController@delete_overtime')->name('delete_overtime')->middleware('is_hr');
 Route::post('/update/overtime/', 'OvertimeController@update_overtime')->name('update_overtime')->middleware('is_hr');
 
 /* Route::post('get-id/{empName}', 'HomeController@getID')->name('getID')->middleware('is_hr'); */
@@ -171,7 +173,7 @@ Route::post('add-holiday', 'HolidayController@addholiday')->name('addholiday')->
 Route::get('slvl-page', 'SlvlController@slvlnav')->name('slvlnav')->middleware('is_hr');
 Route::get('slvl-list', 'SlvlController@slvldata')->name('slvldata')->middleware('is_hr');
 Route::post('add-slvl', 'SlvlController@addslvl')->name('addslvl')->middleware('is_hr');
-Route::get('/delete/slvl/{id}', 'SlvlController@delete_slvl')->name('delete_slvl')->middleware('is_hr');
+Route::get('/delete/slvl/{id}/{employee_no}/{date_sched}', 'SlvlController@delete_slvl')->name('delete_slvl')->middleware('is_hr');
 Route::post('/update/slvl/', 'SlvlController@update_slvl')->name('update_slvl')->middleware('is_hr');
 
 /*--------------------------------------------------------------
@@ -188,12 +190,13 @@ Route::get('payroll-list', 'HomeController@payrolllistnav')->name('payrolllistna
 Route::get('payroll-list-data', 'HomeController@payrolllistdata')->name('payrolllistdata')->middleware('is_finance');
 Route::get('view-payroll/{employee_no}', 'HomeController@viewpayroll')->name('viewpayroll')->middleware('is_finance');
 Route::get('payslip/{employee_no}', 'HomeController@payslip')->name('payslip')->middleware('is_finance');
+Route::get('send-payslip/{employee_no}', 'HomeController@sendpayslip')->name('sendpayslip')->middleware('is_finance');
 
 /*--------------------------------------------------------------
     # TRAVEL ORDER
 --------------------------------------------------------------*/
 Route::get('travel-order-page', 'TravelOrderController@tonav')->name('tonav');
-Route::get('/delete/travel_order/{id}', 'TravelOrderController@delete_travel_order')->name('delete_travel_order')->middleware('is_hr');
+Route::get('/delete/travel_order/{id}/{employee_no}/{date_sched}', 'TravelOrderController@delete_travel_order')->name('delete_travel_order')->middleware('is_hr');
 Route::post('/update/travel_order/', 'TravelOrderController@update_travel_order')->name('update_travel_order')->middleware('is_hr');
 Route::get('travel-order-list', 'TravelOrderController@todata')->name('todata');
 Route::post('add-travel-order', 'TravelOrderController@addto')->name('addto');  
@@ -217,8 +220,8 @@ Route::post('changetime', 'CTController@changetime')->name('changetime')->middle
 /*--------------------------------------------------------------
     # DASHBOARD
 --------------------------------------------------------------*/
-/* Route::get('', 'DBController@dbnav')->name('dashboardnav')->middleware('is_hr');
-Route::get('', 'DBController@dashboard')->name('dashboard')->middleware('is_hr'); */
+/* Route::get('', 'DBController@dbnav')->name('dashboardnav')->middleware('is_hr'); */
+Route::get('', 'DBController@firststate')->name('firststate')->middleware('is_hr');
 
 /*--------------------------------------------------------------
     # SUMMARY

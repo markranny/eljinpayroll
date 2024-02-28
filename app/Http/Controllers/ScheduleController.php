@@ -12,6 +12,8 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log; 
 use Carbon\Carbon;
+use App\employees;
+use App\employee_schedule_temps;
 use App\employees_schedules;
 use App\employees_schedules_logs;
 use DataTables;
@@ -28,12 +30,37 @@ class ScheduleController extends Controller
 
     public function schedlistnav()
     {
-        return view('HR.schedulelist_nav');
+        /* return view('HR.schedulelist_nav'); */
+
+        $employees = DB::table('employees')
+                    ->orderBy('fullname', 'ASC')
+                    ->get();
+
+                    $empposts = DB::table('emp_posts')
+                    ->select('employeeattendanceid')
+                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->limit(1)
+                    ->get();
+
+        return view('HR.schedulelist_nav', compact('employees','empposts'));
     }
 
     public function importdEmpSchednav()
     {
-        return view('HR.Import_Schedule');
+        /* return view('HR.Import_Schedule'); */
+
+        $employees = DB::table('employees')
+                    ->orderBy('lastname', 'ASC')
+                    ->get();
+
+        $empposts = DB::table('emp_posts')
+                    ->select('employeeattendanceid')
+                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->limit(1)
+                    ->get();
+
+        return view('HR.Import_Schedule', compact('employees','empposts'));
+        
     }
 
     public function updatesched($employee_no)
@@ -42,6 +69,94 @@ class ScheduleController extends Controller
         return response()->json($employee_schedule_posts);
 
     }
+
+    public function ecaddsched(Request $request)
+    {
+        $employee_name = request('employee_name');
+        $start_date = request('datesched');
+        $end_date = request('enddatesched');
+        $timein = request('timein');
+        $timeout = request('timeout');
+
+        $employee_data = DB::table('employees')
+            ->select('employee_no','department','line')
+            ->where('fullname', $employee_name)
+            ->first();
+
+        if (!$employee_data) {
+            return back()->with('error', 'Employee not found!');
+        }
+
+        $employee_no = $employee_data->employee_no;
+        $department = $employee_data->department;
+        $line = $employee_data->line;
+
+        $filter = DB::table('employee_schedule_temps')
+            ->where("employee_no", "=", $employee_no)
+            ->where("date_sched", ">=", $start_date)
+            ->where("date_sched", "<=", $end_date)
+            ->count();
+
+        if ($filter > 0) {
+            return back()->with('error', 'Data already exists for the selected date range!');
+        }
+
+        if ($employee_name && $start_date && $end_date && $timein && $timeout) {
+            $start_date = Carbon::parse($start_date);
+            $end_date = Carbon::parse($end_date);
+            $time_in = date('h:i A', strtotime($timein)); // Convert time to 12-hour format
+            $time_out = date('h:i A', strtotime($timeout)); // Convert time to 12-hour format
+
+            $updateArray = [];
+
+            while ($start_date <= $end_date) {
+                $update = new employee_schedule_temps(); // Assuming EmployeeScheduleTemp is your model name
+                $update->employee_no = $employee_no;
+                $update->employee_name = $employee_name;
+                $update->department = $department;
+                $update->line = $line;
+                $update->date_sched = $start_date->toDateString();
+                $update->time = $time_in . ' to ' . $time_out;
+                $update->time_sched = $timein;
+                $update->time_sched_out = $timeout;
+
+                try {
+                    $update->save();
+                    $updateArray[] = $update;
+                } catch (\Exception $e) {
+                    return back()->with('error', 'Failed to save schedule: ' . $e->getMessage());
+                }
+
+                $start_date->addDay();
+            }
+
+            Log::info('Add Schedule');
+
+            $statuslogs = "INSERT INTO statuslogs (linecode, functions, modifieddate) values ('Overtime', 'Add Schedule', getdate())";
+            DB::statement($statuslogs);
+
+            $employees = DB::table('employees')->get();
+
+            return back()->with('employees', $employees)->with('success', 'Schedule added successfully!');
+        } else {
+            return back()->with('error', 'Please fill out the form completely!');
+        }
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*--------------------------------------------------------------
     # EMPLOYEE SCHEDULE
@@ -98,7 +213,7 @@ class ScheduleController extends Controller
     --------------------------------------------------------------*/ 
     public function importScheddata(Request $request)
     {
-        $employee_schedule_temps = DB::table('employee_schedule_temps')
+                $employee_schedule_temps = DB::table('employee_schedule_temps')
                 ->get();
 
                 return DataTables::of($employee_schedule_temps)

@@ -45,7 +45,7 @@ function loadData() {
 
             {data: 'period', name: 'period'},
 
-            {
+            /* {
                 data: 'id',
                 name: 'id',
                 orderable: false,
@@ -57,6 +57,33 @@ function loadData() {
                     `;
 
                 }
+            }  */
+
+            /* {
+                data: 'id',
+                name: 'id',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, full, meta) {
+                    return `
+                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.employee_name}', '${full.date}', '${full.in1}', '${full.in2}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal123" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.working_schedule}')" >DELETE</button>    
+                    `;
+
+                }
+            }  */
+
+            {
+                data: 'id',
+                name: 'id',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, full, meta) {
+                    return `
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal123" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.working_schedule}')" >DELETE</button>    
+                    `;
+
+                }
             } 
     ]
 
@@ -64,9 +91,9 @@ function loadData() {
 }
 
 
-function setDeleteButton(id){
+function setDeleteButton(id, employee_no, working_schedule){
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteOvertime(${id})">Delete</button>   
+    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteOvertime(${id}, '${employee_no}', '${working_schedule}')">Delete</button>   
     <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
     `);
 }
@@ -172,9 +199,9 @@ $(document).ready(function() {
         });
 });
 
-function deleteOvertime(id){
+function deleteOvertime(id, employee_no, working_schedule){
     $.ajax({
-            url: "/delete/overtime/"+id, 
+            url: "/delete/overtime/"+id+'/'+employee_no+'/'+working_schedule, 
             type: "GET",
             dataType: "json",
             success: function(response) {

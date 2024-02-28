@@ -28,12 +28,21 @@
 
 @foreach ($payslip as $data)
 
-<?php 
-$basic =  $data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays;
-$basicpay =  ($data->pay_rate * ($data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays));
-$basichrs =  $basicpay / (($basicpay / $basic) / 8) ;
-$basicdays =  $basichrs / 8; 
+<?php
+
+if ($data->basic_pay > 0 && $data->department != "Logistics and Warehouse Department") {
+    $basic = $data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays;
+    $basicpay = $data->pay_rate * $basic;
+    $basichrs = $basicpay / (($basicpay / $basic) / 8);
+    $basicdays = $basichrs / 8;
+} elseif ($data->basic_pay > 0 && $data->department == "Logistics and Warehouse Department") {
+    $basic = $data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays;
+    $basicpay = $data->pertrip_amount;
+    $basichrs = $data->per_trip;
+    $basicdays = $data->per_trip;
+}
 ?>
+
 
 
 <!--=========================================================

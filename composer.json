@@ -10,9 +10,14 @@
     "require": {
         "php": "^7.2.5|^8.0",
         "barryvdh/laravel-dompdf": "^2.0",
+        "dompdf/dompdf": "^2.0",
         "fideloper/proxy": "^4.4",
+        "h4cc/wkhtmltoimage-amd64": "^0.12.4",
+        "intervention/image": "^2.7",
         "laravel/framework": "^6.20.26",
         "laravel/tinker": "^2.5",
+        "phpmailer/phpmailer": "^6.9",
+        "tecnickcom/tcpdf": "^6.6",
         "yajra/laravel-datatables-oracle": "9.*"
     },
     "require-dev": {

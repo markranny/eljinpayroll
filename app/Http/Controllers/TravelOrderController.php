@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use App\obs;
 use App\employees;
+use App\employee_attendance_posts;
 use App\overtimes_logs;
 use DataTables;
 use Validator;
@@ -203,18 +204,25 @@ class TravelOrderController extends Controller
     # DELETE TRAVELORDER
     --------------------------------------------------------------*/
 
-    public function delete_travel_order($id){
+    public function delete_travel_order($id, $employee_no, $date_sched){
         $tableName = 'obs';
+        $DTR = 'employee_attendance_posts';
         $idToDelete = $id; 
         
         $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
-        if ($recordExists) {
+        $DTRrecords = DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->exists();
+
+        
+        /* dd($DTRrecords); */
+        if ($recordExists && $DTRrecords) {
             DB::table($tableName)->where('id', $idToDelete)->delete();
+            DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->delete();
             
             return response()->json(['message' => 'success']);
         } else {
             return response()->json(['message' => 'fail']);
         }
+
     }
 
     /*--------------------------------------------------------------
@@ -223,17 +231,66 @@ class TravelOrderController extends Controller
     public function update_travel_order(Request $request){
         try {
             $data = $request->validate([
-                'id' => 'required|exists:rank_files,id',
-                'rank_file_code' => 'required|unique:rank_files,rank_file_code,' . $request->id,
-                'rank_file' => 'required|string',
+                'id' => 'required|exists:obs,id'
             ]);
-            DB::table('rank_files')
-            ->where('id', $data['id'])
-            ->update([
-                'rank_file_code' => $data['rank_file_code'],
-                'rank_file' => $data['rank_file'],
-            ]);
-            return response()->json(['message' => 'success']);
+            
+            $datesched = request('datesched');
+            $location = request('location');
+            $remarks = request('remarks');
+            $id = request('id');
+    
+            $getday = Carbon::parse($datesched)->format('d');
+            $getmonth = Carbon::parse($datesched)->format('F');
+            $getyear = Carbon::parse($datesched)->format('Y');
+    
+    
+            if((int)$getday < 15){
+                $getperiod = "1st Period";
+            }else{
+                $getperiod = "2nd Period";
+            }
+    
+            $obData = DB::table('obs')
+            ->where('id', $id)
+            ->first();
+
+            if(!$obData){
+                return response()->json(['message' => 'Invalid Overtime ID']);
+            }
+            $employee_no = $obData->employee_no;
+            $checkIfDateAlreadyExistForThisUser = DB::table('obs')
+            ->where("employee_no", "=", $employee_no)
+            ->where("date_sched", "=", $datesched)
+            ->where('id', '!=', $id)
+            ->count();
+
+            if($checkIfDateAlreadyExistForThisUser > 0){
+                return response()->json(['message' => 'Date already Exist for this user.']);
+            }
+
+            if($datesched != null && $location != null && $remarks != null){
+
+                DB::table('obs')
+                ->where('id', $id)
+                ->update([
+                    'date_sched' => $datesched,
+                    'location' => $location,
+                    'remarks'   =>  $remarks,
+                ]);
+        
+
+                DB::table('employee_attendance_posts')
+                ->where('employee_no', $employee_no)
+                ->where('date', $datesched)
+                ->update(['date' => $datesched]);
+
+                return response()->json(['message' => 'success']);
+
+
+            }else{
+                return back()->with('error','Please Fill Out This Form!');
+            }
+
         } catch (\Exception $ex) {
             return response()->json(['message' => $ex->getMessage()]);
         }

@@ -66,7 +66,6 @@ class CSController extends Controller
     public function addsched(Request $request)
     {
         $employeeattendanceid = request('employeeattendanceid');
-        /* $employee_no = request('employee_no'); */
         $employee_name = request('employee_name');
         $datesched = request('datesched');
         $newdatesched = request('newdatesched');
@@ -79,7 +78,11 @@ class CSController extends Controller
         ->where('fullname', $employee_name)
         ->first();
 
-        $employee_no = $employee_data->employee_no;
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($newdatesched)->format('d');
         $getmonth = Carbon::parse($newdatesched)->format('F');
@@ -95,6 +98,13 @@ class CSController extends Controller
         ->where("working_schedule","=",$datesched)
         ->count();
 
+        /* $filter2 = DB::table('employee_attendance_posts')
+        ->where("employeeattendanceid", "=", $employeeattendanceid)
+        ->where("employee_no", "=", $employee_no)
+        ->where("date", "=", $datesched)
+        ->where("day", "=", $datesched)
+        ->count(); */
+
         $empatt = DB::table('emp_posts')
         ->where("employeeattendanceid","=",$employeeattendanceid)
         ->where("employee_no","=",$employee_no)
@@ -105,9 +115,9 @@ class CSController extends Controller
 
     /* if($empatt>1){ */
         if($filter<1){
-            if($employee_name != null && $employee_no != null && $datesched != null && $newdatesched != null && $timein != null && $timeout != null){
+            if($employee_no != null && $employee_name != null && $employee_no != null && $datesched != null && $newdatesched != null && $timein != null && $timeout != null && $remarks != null){
                 $update = new changeoffs();
-                $update->employeeattendanceid   =   111;
+                $update->employeeattendanceid   =   $employeeattendanceid;
                 $update->employee_no   =   $employee_no;
                 $update->employee_name   =   $employee_name;
                 $update->working_schedule   =   request('datesched');

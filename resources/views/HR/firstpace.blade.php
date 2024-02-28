@@ -452,7 +452,7 @@
           @endif
 
           <li class="nav-item ">
-            <a class="nav-link" href="https://ecticketph.com/login">
+            <a class="nav-link" href="https://ecticketph.com/login" target="_blank">
               <i class="material-icons">contact_support</i>
               <p> Service </p>
             </a>

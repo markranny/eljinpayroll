@@ -11,6 +11,11 @@ use Illuminate\Foundation\Exceptions\Handler;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log; 
+use Illuminate\Support\Facades\Mail;
+use Intervention\Image\Facades\Image;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Dompdf\Dompdf;
 use Carbon\Carbon;
 use App\retros;
 use App\osphs;
@@ -21,6 +26,7 @@ use App\set_holidays_logs;
 use App\employee_deductions;
 use App\employees;
 use App\changetimes;
+use TCPDF;
 use DataTables;
 use Validator;
 
@@ -171,7 +177,7 @@ class HomeController extends Controller
     public function empplugin()
     {
         // Assuming your .bat file is located at the specified path
-        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat';
+        /* $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat';
 
         // Check if the .bat file exists
         if (file_exists($batFilePath)) {
@@ -182,18 +188,60 @@ class HomeController extends Controller
         } else {
             // Handle case when the .bat file doesn't exist
             dd('The .bat file does not exist.');
-        }  
+        }   */
 
-        /* exec("Z:/Bat Files/employee_details.bat");
+        /* exec("C:\\BWPAYROLL SYSTEM\\PLUGINS\\employee_details.bat");
         return view('HR.Employee_infos_nav'); */
+
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat']);
+        $process->run();
+
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
+            return view('HR.Employee_infos_nav');
+        }
+
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Open Employee Details UI');
     }
 
     
     public function index()
     {
-        $empcount = 0; // Initialize $empcount
-        $empcount = Employees::count();
-        return view('home', compact('empcount'));
+        $empcount = employees::count();
+
+        $gross = DB::table('emp_final_posts as a')
+            ->select(DB::raw("FORMAT(
+            SUM(
+                CAST(a.pay_rate AS FLOAT) * 
+                (CAST(a.days AS FLOAT) - CAST(a.slvl_hrs AS FLOAT) - CAST(a.holiday_hrs AS FLOAT) - CAST(a.offdays AS FLOAT))
+                + CAST(a.slvl_amount AS FLOAT) + CAST(a.offdays_amount AS FLOAT)
+                + CAST(a.ot_amount AS FLOAT) + CAST(a.holiday_amount AS FLOAT) + CAST(a.nightdif_amount AS FLOAT)
+                + CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT)
+                - (CAST(c.sss_loan AS FLOAT) + CAST(c.sss_prem AS FLOAT) + CAST(c.pag_ibig_loan AS FLOAT) + CAST(c.pag_ibig_prem AS FLOAT) + CAST(c.philhealth AS FLOAT))
+                - (CAST(d.advance AS FLOAT) + CAST(d.charge AS FLOAT) + CAST(d.uniform AS FLOAT) + CAST(d.bond_deposit AS FLOAT) + CAST(d.meal AS FLOAT) + CAST(d.misc AS FLOAT) + CAST(d.mutual_charge AS FLOAT))
+                - (CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT))
+                ),
+                '#,##0.00') AS gross"))
+            ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+            ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+            ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+            ->first();
+
+        $overtimePremium = DB::table('emp_final_posts as a')
+            ->select(DB::raw("FORMAT(SUM(cast(a.ot_amount as float)), '#,##0.00') as OvertimePremium"))
+            ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+            ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+            ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+            ->distinct()
+            ->first();
+
+        // Ensure $gross and $overtimePremium are not null before accessing their properties
+        $grossValue = $gross ? $gross->gross : null;
+        $overtimePremiumValue = $overtimePremium ? $overtimePremium->OvertimePremium : null;
+
+        return view('home', compact('empcount', 'grossValue', 'overtimePremiumValue'));
     }
 
     public function saccplugin()
@@ -204,65 +252,78 @@ class HomeController extends Controller
 
     public function edtrplugin()
     {
-        // Assuming your .bat file is located at the specified path
-        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/edtr.bat';
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/edtr.bat']);
+        $process->run();
 
-        // Check if the .bat file exists
-        if (file_exists($batFilePath)) {
-            // Execute the .bat file using exec()
-            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
+            return view('HR.home');
+        }
 
-            return view('home');
-        } else {
-            // Handle case when the .bat file doesn't exist
-            dd('The .bat file does not exist.');
-        }  
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Open DTR UI');
     }
 
     public function attlist()
     {
-        // Assuming your .bat file is located at the specified path
-        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/attendance_checking.bat';
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/attendance_checking.bat']);
+        $process->run();
 
-        // Check if the .bat file exists
-        if (file_exists($batFilePath)) {
-            // Execute the .bat file using exec()
-            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
-
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
             return view('HR.Import_Attendance');
-        } else {
-            // Handle case when the .bat file doesn't exist
-            dd('The .bat file does not exist.');
-        }  
+        }
+
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Import EAC UI');
+        
     }
 
     public function attendancepostsplugin()
     {
-        // Assuming your .bat file is located at the specified path
-        $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/attendance-list-plugin.bat';
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/attendance-list-plugin.bat']);
+        $process->run();
 
-        // Check if the .bat file exists
-        if (file_exists($batFilePath)) {
-            // Execute the .bat file using exec()
-            $output = exec('cmd /C "'.$batFilePath.'"', $outputArray, $returnCode);
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
+            return view('HR.home');
+        }
 
-            return view('home');
-        } else {
-            // Handle case when the .bat file doesn't exist
-            dd('The .bat file does not exist.');
-        }  
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Open DRAFT UI');
     }
 
     public function deductions()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_deductions.bat");
-        return view('home');
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/employee_deductions.bat']);
+        $process->run();
+
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
+            return view('HR.home');
+        }
+
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Open Deductions UI');
     }
 
     public function benefits()
     {
-        exec("C:/BWPAYROLL SYSTEM/PLUGINS/employee_benefits.bat");
-        return view('home');
+        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/employee_benefits.bat']);
+        $process->run();
+
+        // Executes after the command finishes
+        if (!$process->isSuccessful()) {
+            return view('HR.home');
+        }
+
+        // Fetch the output and handle if needed
+        $output = $process->getOutput();
+        return back()->with('success', 'Open Benefits UI');
     }
 
     public function Fattendance()
@@ -616,7 +677,7 @@ class HomeController extends Controller
                         + cast(a.slvl_amount as float) + cast(a.offdays_amount as float)
                         + cast(a.ot_amount as float) + cast(a.holiday_amount as float) + cast(a.nightdif_amount as float)
                         + cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)
-                        + (cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float))
+                        + (cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float))s
                         + (cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float))
                         + (cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as GrossAmount"),
                     DB::raw("FORMAT(cast(a.pay_rate as float) * 
@@ -628,9 +689,13 @@ class HomeController extends Controller
                         - (cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float))
                         - (cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float))
                         - (cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as NetAmount"),
+
                     DB::raw("FORMAT((cast(d.advance as float) + cast(d.charge as float) + cast(d.uniform as float) + cast(d.bond_deposit as float) + cast(d.meal as float) + cast(d.misc as float) + cast(d.mutual_charge as float)), 'F2') as TotalDeducAmount"),
+
                     DB::raw("FORMAT((cast(c.sss_loan as float) + cast(c.sss_prem as float) + cast(c.pag_ibig_loan as float) + cast(c.pag_ibig_prem as float) + cast(c.philhealth as float)), 'F2') as TotalContriAmount"),
+
                     DB::raw("FORMAT((cast(a.ctlate_amount as float) + cast(a.late_amount as float) + cast(a.udt_amount as float)), 'F2') as TotalOtherDeduc"),
+                    
                     'a.basic_pay',
                     'a.per_trip',
                     'a.pertrip_amount',
@@ -665,6 +730,9 @@ class HomeController extends Controller
                 ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
                 ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
                 ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+                
+
+
                 ->distinct()
                 ->get();
 
@@ -672,7 +740,8 @@ class HomeController extends Controller
 
                     ->addColumn('action', function($request){
                         $btn = ' <a href="view-payroll/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-success btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">article</i></span></a>';
-                        $btn = $btn.' <a href="payslip/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-danger btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">receipt_long</i></span></a>';
+                        $btn = $btn.' <a href="payslip/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-danger btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">download</i></span></a>';
+                        $btn = $btn.' <a href="send-payslip/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-primary btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">send</i></span></a>';
                     return $btn;
 
                     })
@@ -785,6 +854,145 @@ class HomeController extends Controller
 
                 return DataTables::of($employee_contributions)
                 ->make(true);
+    }
+
+
+
+    /*--------------------------------------------------------------
+    # SEND PAYSLIP
+    --------------------------------------------------------------*/
+    public function sendpayslip($employee_no)
+    {
+        try{
+        $payslip = DB::table('emp_final_posts')
+                ->join('employees', 'emp_final_posts.employee_no', '=', 'employees.employee_no')
+                ->leftjoin('employee_contributions', 'employees.employee_no', '=', 'employee_contributions.employee_no')
+                ->leftjoin('employee_deductions', 'employees.employee_no', '=', 'employee_deductions.employee_no')
+                ->select('emp_final_posts.*','employees.*',
+                'employee_deductions.advance','employee_deductions.charge','employee_deductions.meal','employee_deductions.misc','employee_deductions.uniform','employee_deductions.bond_deposit','employee_deductions.mutual_charge',
+                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
+
+                DB::raw('
+                ROUND(
+                    (IIF(emp_final_posts.basic_pay is null, 0, cast(emp_final_posts.basic_pay as float))
+                    + 
+                    IIF(emp_final_posts.nightdif is null, 0, cast(emp_final_posts.nightdif as float))
+                    + 
+                    IIF(emp_final_posts.nightdif_amount is null, 0, cast(emp_final_posts.nightdif_amount as float))
+                    +
+                    IIF(emp_final_posts.holiday_amount is null, 0, cast(emp_final_posts.holiday_amount as float)) 
+                    +
+                    IIF(emp_final_posts.slvl_amount is null, 0, cast(emp_final_posts.slvl_amount as float)) 
+                    + 
+                    IIF(emp_final_posts.offdays is null, 0, cast(emp_final_posts.offdays as float)) 
+                    + 
+                    IIF(emp_final_posts.ot_amount is null, 0, cast(emp_final_posts.ot_amount as float)) 
+                    + 
+                    IIF(emp_final_posts.offset_amount is null, 0, cast(emp_final_posts.offset_amount as float))
+                    + 
+                    IIF(emp_final_posts.ob_amount is null, 0, cast(emp_final_posts.ob_amount as float)))
+                    
+                    -
+                    
+                    (IIF(emp_final_posts.late_amount is null, 0, cast(emp_final_posts.late_amount as float))
+                    +
+                    IIF(emp_final_posts.udt_amount is null, 0, cast(emp_final_posts.udt_amount as float))
+                    +
+                    IIF(employee_deductions.advance is null, 0, cast(employee_deductions.advance as float))
+                    +
+                    IIF(employee_deductions.charge is null, 0, cast(employee_deductions.charge as float))
+                    +
+                    IIF(employee_deductions.meal is null, 0, cast(employee_deductions.meal as float))
+                    +
+                    IIF(employee_deductions.misc is null, 0, cast(employee_deductions.misc as float))
+                    +
+                    IIF(employee_deductions.uniform is null, 0, cast(employee_deductions.uniform as float))
+                    +
+                    IIF(employee_deductions.bond_deposit is null, 0, cast(employee_deductions.bond_deposit as float))
+                    +
+                    IIF(employee_deductions.mutual_charge is null, 0, cast(employee_deductions.mutual_charge as float))
+                    +
+                    IIF(employee_contributions.sss_loan is null, 0, cast(employee_contributions.sss_loan as float))
+                    +
+                    IIF(employee_contributions.pag_ibig_loan is null, 0, cast(employee_contributions.pag_ibig_loan as float))
+                    +
+                    IIF(employee_contributions.mutual_loan is null, 0, cast(employee_contributions.mutual_loan as float))
+                    +
+                    IIF(employee_contributions.sss_prem is null, 0, cast(employee_contributions.sss_prem as float))
+                    +
+                    IIF(employee_contributions.pag_ibig_prem is null, 0, cast(employee_contributions.pag_ibig_prem as float))
+                    +
+                    IIF(employee_contributions.philhealth is null, 0, cast(employee_contributions.philhealth as float))
+                    +
+                    IIF(employee_contributions.unions is null, 0, cast(employee_contributions.unions as float))
+                    
+                    
+                    
+                    ), 2)
+                    as gross
+                '))
+                ->where("employees.employee_no", "=", $employee_no)
+                ->get();
+
+
+
+                $data = [];
+
+        /* Mail::send('hr.payslip', ['payslip' => $payslip] + $data, function ($message) {
+            $message->to('aglapay.markranny@gmail.com', 'Recipient Name')
+                    ->subject('Test Email');
+        }); */
+
+        Mail::send('hr.sendpayslipheader', ['payslip' => $payslip] + $data, function ($message) use ($payslip) {
+            // Generate PDF using TCPDF
+            $pdf = new TCPDF();
+            $pdf->AddPage();
+            // Add your content to the PDF
+            $pdf->writeHTML('<h1>Payslip</h1>');
+            // Output the PDF content
+            $pdfContent = $pdf->Output('payslip.pdf', 'S'); // 'S' parameter returns PDF as a string
+        
+            $employee_email = $payslip->first()->email;
+
+            // Attach PDF to the email
+            $message->from('dianamaenillo21@gmail.com', 'PAYSLIP')
+                    ->to($employee_email, 'PAYSLIP')
+                    ->subject('ECPAYROLL')
+                    ->attachData($pdfContent, 'payslip.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+        });
+
+        /* Mail::send([], [], function ($message) use ($payslip) {
+            // Render Blade view to a string with inline CSS styles
+            $pdfContent = View::make('hr.sendpayslip', ['payslip' => $payslip])->render();
+        
+            // Generate PDF using TCPDF
+            $pdf = new TCPDF();
+            $pdf->AddPage();
+            // Set font
+            $pdf->SetFont('helvetica', '', 10);
+            // Add the rendered Blade view content to the PDF
+            $pdf->writeHTML($pdfContent, true, false, true, false, '');
+        
+            // Output the PDF content
+            $pdfOutput = $pdf->Output('payslip.pdf', 'S'); // 'S' parameter returns PDF as a string
+        
+            // Attach PDF to the email
+            $message->from('dianamaenillo21@gmail.com', 'PAYROLL')
+                    ->to('dianamaenillo21@gmail.com', 'Sample')
+                    ->subject('Test Email')
+                    ->attachData($pdfOutput, 'payslip.pdf', [
+                        'mime' => 'application/pdf',
+                    ]);
+        });
+        return "Test email sent successfully!"; */
+
+        return back()->with('success','Payslip sent successfully!!!');
+        } catch (\Exception $e) {
+        // Log the error or do whatever necessary for error handling
+        return back()->with('error', 'Error occurred while sending payslip: ' . $e->getMessage());
+    }
     }
 
 

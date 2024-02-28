@@ -52,10 +52,16 @@ function loadData() {
                 name: 'id',
                 orderable: false,
                 searchable: false,
+                /* render: function (data, type, full, meta) {
+                    return `
+                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.firstname}', '${full.date_sched}', '${full.location}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.date_sched}')">DELETE</button>    
+                    `;
+                } */
+
                 render: function (data, type, full, meta) {
                     return `
-                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.firstname}', '${full.date_sched}', '${full.location}', '${full.purpose}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data})">DELETE</button>    
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.date_sched}')">DELETE</button>    
                     `;
                 }
             } 
@@ -66,15 +72,14 @@ function loadData() {
 }
 
 
-function setDeleteButton(id){
+function setDeleteButton(id, employee_no, date_sched){
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteTravelOrder(${id})">Delete</button>   
+    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteTravelOrder(${id}, '${employee_no}', '${date_sched}')">Delete</button>   
     <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
     `);
 }
 
-
-function setUpdateForm(id, employee_no,  fullname,  date_sched, location, purpose){
+function setUpdateForm(id, employee_no,  fullname,  date_sched, location, remarks){
     $("#updateData").html(`
     <div class="col-12">
         <div class="form-group">
@@ -89,25 +94,19 @@ function setUpdateForm(id, employee_no,  fullname,  date_sched, location, purpos
     </div>
     <div class="col-6">
         <div class="form-group">
-            <input type="text" value="${date_sched}" id="datetimepicker5" name="datesched" class="form-control datepicker" placeholder="Select Date"><br>
+            <input type="text" name="datesched" class="form-control datepicker" id="datetimepicker5" placeholder="Select Date" ><br>
         </div>
     </div>
 
     <div class="col-6">
         <div class="form-group">
-            <input type="text" name="timein" id="datetimepicker3" class="form-control datepicker" placeholder=" Insert OT (IN)" value="${ot_in}"><br>
-        </div>
-    </div>
-
-    <div class="col-6">
-        <div class="form-group">
-            <input type="text" name="timeout" id="datetimepicker4" class="form-control datepicker" placeholder="Insert OT (OUT)" value="${ot_out}">
+            <textarea name="location" class="form-control textarea-autosize" placeholder="location">${location}</textarea>
         </div>
     </div>
 
     <div class="col-12">
         <div class="form-group">
-            <textarea class="form-control textarea-autosize" name="remarks" id="textareaExample" rows="4" placeholder="Remarks">${remarks}</textarea>
+            <textarea class="form-control textarea-autosize" name="remarks" id="textareaExample" rows="4" placeholder="remarks">${remarks}</textarea>
         </div>
     </div>
     <div class="col-12">
@@ -119,15 +118,9 @@ function setUpdateForm(id, employee_no,  fullname,  date_sched, location, purpos
 
     `);
 
-    $('#datetimepicker3').datetimepicker({
-		format: 'HH:mm'
-	});
-    $('#datetimepicker4').datetimepicker({
-		format: 'HH:mm'
-	});
-
     $('#datetimepicker5').datetimepicker({
-        format: 'MM-DD-YYYY'
+        format: 'MM/DD/YYYY',
+        defaultDate: date_sched
     });
 }
 
@@ -174,9 +167,9 @@ $(document).ready(function() {
         });
 });
 
-function deleteTravelOrder(id){
+function deleteTravelOrder(id, employee_no, datesched){
     $.ajax({
-            url: "/delete/travel_order/"+id, 
+            url: "/delete/travel_order/"+id+'/'+employee_no+'/'+datesched, 
             type: "GET",
             dataType: "json",
             success: function(response) {

@@ -64,10 +64,14 @@
                     <div class="card-body table-responsive">
                         
                         <?php 
-                        if($data->basic_pay > 0){
+                        if($data->basic_pay > 0 && $data->department != "Logistics and Warehouse Department"){
                             $basic =  $data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays;
                             $basicpay =  ($data->pay_rate * ($data->days - $data->slvl_hrs - $data->holiday_hrs - $data->offdays));
-                        }else{
+                        }elseif($data->basic_pay > 0 && $data->department = "Logistics and Warehouse Department"){
+                            $basic =  $data->per_trip;
+                            $basicpay =  $data->pertrip_amount;
+                        }
+                        else{
                             $basic =  0;
                             $basicpay =  0;
                         }
@@ -83,7 +87,7 @@
                                         <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
                                     </div>
                                 </div>
-                                <label class="col-sm-2 col-form-label">Days</label>
+                                <label class="col-sm-2 col-form-label">Days/Trip</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
                                         <input type="text" class="form-control" value="<?php echo $basic?>" readonly>

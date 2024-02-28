@@ -1,8 +1,8 @@
 function loadData() {
-    if ($.fn.dataTable.isDataTable('#slvl')) {
-        $('#slvl').DataTable().destroy();
+    if ($.fn.dataTable.isDataTable('#schedule')) {
+        $('#schedule').DataTable().destroy();
     }
-       /*------------------------------------------
+      /*------------------------------------------
      --------------------------------------------
      Pass Header Token
      --------------------------------------------
@@ -13,7 +13,7 @@ function loadData() {
           }
     });
 
-    var table = $('#slvl').DataTable({
+    var table = $('#schedule').DataTable({
 
     processing: true,
     language: {
@@ -26,58 +26,66 @@ function loadData() {
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 
-    ajax: "slvl-list",
+    ajax: "overtime-list",
 
     columns: [
             {data: 'id', name: 'id'},
 
             {data: 'employee_no', name: 'employee_no'},
 
-            {data: 'firstname', name: 'firstname'},
+            {data: 'fullname', name: 'fullname'},
 
-            {data: 'date_sched', name: 'date_sched'},
+            {data: 'working_schedule', name: 'working_schedule'},
 
-            {data: 'type', name: 'type'},
+            {data: 'ot_in', name: 'ot_in'},
+
+            {data: 'ot_out', name: 'ot_out'},
 
             {data: 'month', name: 'month'},
 
             {data: 'period', name: 'period'},
+
+            /* {
+                data: 'id',
+                name: 'id',
+                orderable: false,
+                searchable: false,
+                render: function (data, type, full, meta) {
+                    return `
+                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.employee_name}', '${full.date}', '${full.in1}', '${full.in2}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal123" onclick="setDeleteButton(${data})" >DELETE</button>    
+                    `;
+
+                }
+            }  */
 
             {
                 data: 'id',
                 name: 'id',
                 orderable: false,
                 searchable: false,
-                /* render: function (data, type, full, meta) {
-                    return `
-                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.firstname}', '${full.date_sched}', '${full.type}', '${full.status}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data})">DELETE</button>    
-                    `;
-                } */
-
                 render: function (data, type, full, meta) {
                     return `
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data},'${full.employee_no}', '${full.date_sched}')">DELETE</button>    
+                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.employee_name}', '${full.date}', '${full.in1}', '${full.in2}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal123" onclick="setDeleteButton(${data})" >DELETE</button>    
                     `;
+
                 }
             } 
-
     ]
 
     });
-
-
 }
 
 
-function setDeleteButton(id, employee_no, date_sched){
+function setDeleteButton(id){
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteslvl(${id}, '${employee_no}', '${date_sched}')">Delete</button>   
+    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteOvertime(${id})">Delete</button>   
     <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
     `);
 }
 
-function setUpdateForm(id, employee_no,  fullname,  date_sched,  type,  status, remarks){
+function setUpdateForm(id, employee_no,  fullname,  working_schedule,  ot_in,  ot_out, remarks){
     $("#updateData").html(`
     <div class="col-12">
         <div class="form-group">
@@ -90,21 +98,21 @@ function setUpdateForm(id, employee_no,  fullname,  date_sched,  type,  status, 
             <input type="text" name="employee_no" class="form-control" placeholder="Employee Number" disabled value="${employee_no}"><br>
         </div>
     </div>
-    <div class="col-6">
+    <div class="col-12">
         <div class="form-group">
-            <input type="text" value="${date_sched}" id="datetimepicker5" name="datesched" class="form-control datepicker" placeholder="Select Date"><br>
+            <input type="text" name="datesched" class="form-control datepicker" id="datetimepicker5" placeholder="Select Date" ><br>
         </div>
     </div>
 
     <div class="col-6">
         <div class="form-group">
-            <input type="text" name="timein" id="datetimepicker3" class="form-control datepicker" placeholder=" Insert OT (IN)" value="${type}"><br>
+            <input type="text" name="timein" id="datetimepicker3" class="form-control datepicker" placeholder=" Insert OT (IN)" value="${ot_in}">
         </div>
     </div>
 
     <div class="col-6">
         <div class="form-group">
-            <input type="text" name="status"  class="form-control" placeholder="Insert OT (OUT)" value="${status}">
+            <input type="text" name="timeout" id="datetimepicker4" class="form-control datepicker" placeholder="Insert OT (OUT)" value="${ot_out}">
         </div>
     </div>
 
@@ -130,19 +138,20 @@ function setUpdateForm(id, employee_no,  fullname,  date_sched,  type,  status, 
 	});
 
     $('#datetimepicker5').datetimepicker({
-        format: 'MM-DD-YYYY'
+        format: 'MM/DD/YYYY',
+        defaultDate: working_schedule
     });
 }
 
 
 $(document).ready(function() {
-        $("#updateslvl").submit(function(e) {
+        $("#updateOvertime").submit(function(e) {
         e.preventDefault();
 
         var formData = new FormData(this);
 
         $.ajax({
-                url: "/update/slvl/", 
+                url: "/update/overtime/", 
                 type: "POST",
                 data: formData,
                 processData: false,
@@ -177,9 +186,9 @@ $(document).ready(function() {
         });
 });
 
-function deleteslvl(id, employee_no, datesched){
+function deleteOvertime(id){
     $.ajax({
-            url: "/delete/slvl/"+id+'/'+employee_no+'/'+datesched, 
+            url: "/delete/overtime/"+id, 
             type: "GET",
             dataType: "json",
             success: function(response) {
