@@ -32,20 +32,20 @@
                 <select class="selectpicker" data-live-search="true" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
                     <option disabled>BW EMPLOYEES</option>
                         @foreach ($employees as $data)
-                            <option value="{{$data->lastname}} {{$data->firstname}}" >{{$data->lastname}} {{$data->firstname}}</option>
+                            <option value="{{$data->employee_no}}" >{{$data->lastname}} {{$data->firstname}}</option>
                         @endforeach
                 </select>
                 </div>
-            </div><br><br>
+                </div><br><br>
 
-            <div class="col-6">
+                <div class="col-6">
                 <div class="form-group">
-                    <!-- <label>EMPLOYEE ATTENDANCE ID</label><br> -->
                     @foreach ($empposts as $empposts)
                     <input type="text" name="employeeattendanceid" class="form-control" placeholder="Input Employeeattendanceid" max="10" value="{{ $empposts->employeeattendanceid }}" readonly><br>
                     @endforeach
                 </div>
                 </div>
+
 
                 <div class="col-6">
                 <div class="form-group">

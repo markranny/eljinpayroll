@@ -6,11 +6,10 @@
                     <thead>
                         <tr>
                         <th class="flex" style="width: 200px !important;">CostCenter</th>
-                        <th class="flex" style="width: 200px !important;">EmployeeNo</th>
-                        <th class="flex" style="width: 200px !important;">EmployeeName</th>
                         <th class="flex" style="width: 200px !important;">SSS_Loan</th>
                         <th class="flex" style="width: 200px !important;">HDMF_Loan</th>
                         <th class="flex" style="width: 200px !important;">Mutual_Loan</th>
+                        <th class="flex" style="width: 200px !important;">Mutual_Share</th>
                         <th class="flex" style="width: 200px !important;">SSS_Prem</th>
                         <th class="flex" style="width: 200px !important;">HDMF_Prem</th>
                         <th class="flex" style="width: 200px !important;">PhilHealth</th>
@@ -27,7 +26,6 @@
                     </thead>
                         <tfoot class="table-footer">
                         <th class="flex" style="width: 200px !important;">TOTAL</th>
-                        <th class="flex" style="width: 200px !important;"></th>
                         <th class="flex" style="width: 200px !important;"></th>
                         <th class="flex" style="width: 200px !important;"></th>
                         <th class="flex" style="width: 200px !important;"></th>
@@ -76,7 +74,7 @@ scrollX: true,
 scrollY: "400px",
 scrollcollapse: true,
 
-"lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]],
+"lengthMenu": [[10, 20, 100,  -1], [10, 20, 100, "All"]],
 
  dom: '<"top"fl<"clear">>rt<"bottom"ip<"clear">>',
 
@@ -91,11 +89,10 @@ buttons: [ 'csv', 'excel', 'pdf', 'print' ],
   columns: [
 
       {data: 'CostCenter', name: 'CostCenter'},
-      {data: 'employee_no', name: 'employee_no'},
-      {data: 'employee_name', name: 'employee_name'},
       {data: 'sss_loan', name: 'sss_loan'},
       {data: 'pag_ibig_loan', name: 'pag_ibig_loan'},
       {data: 'mutual_loan', name: 'mutual_loan'},
+      {data: 'mutual_share', name: 'mutual_share'},
       {data: 'sss_prem', name: 'sss_prem'},
       {data: 'pag_ibig_prem', name: 'pag_ibig_prem'},
       {data: 'philhealth', name: 'philhealth'},
@@ -116,7 +113,7 @@ buttons: [ 'csv', 'excel', 'pdf', 'print' ],
     var api = this.api();
 
     // Define columns to sum
-    var sumColumns = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]; // Column indices of columns to sum
+    var sumColumns = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]; // Column indices of columns to sum
 
     // Calculate sum for each column
     sumColumns.forEach(function (colIndex) {

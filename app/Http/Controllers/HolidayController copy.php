@@ -115,11 +115,11 @@ class HolidayController extends Controller
                     when a.type = 'Legal Holiday' then '200' 
                     when a.type = 'Special Non-Working Holiday' then '30' else '' end, 
                    
-                    case when a.type = 'Regular Holiday' then FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                    when a.type = 'Special Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') 
-                    when a.type = 'Special Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') 
-                    when a.type = 'Legal Holiday' then FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                    when a.type = 'Special Non-Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') else '0' end holidayamount,
+                    case when a.type = 'Regular Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                    when a.type = 'Special Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') 
+                    when a.type = 'Special Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') 
+                    when a.type = 'Legal Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                    when a.type = 'Special Non-Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') else '0' end holidayamount,
                     
                     '$getperiod','0' from set_holidays a left join employee_attendance_posts b on a.employee_no = b.employee_no left join employees c on b.employee_no = c.employee_no where b.date = '$datesched'
                 ";
@@ -139,10 +139,10 @@ class HolidayController extends Controller
                         ELSE ''
                     END,
                     holiday_amount = CASE 
-                        WHEN a.type = 'Regular Holiday' THEN FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                        WHEN a.type = 'Special Working Holiday' THEN FORMAT(cast(c.pay_rate as float) * 0.30, 'F2') 
-                        WHEN a.type = 'Legal Holiday' THEN FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                        WHEN a.type = 'Special Non-Working Holiday' THEN FORMAT(cast(c.pay_rate as float) * 0.30, 'F2') 
+                        WHEN a.type = 'Regular Holiday' THEN FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                        WHEN a.type = 'Special Working Holiday' THEN FORMAT(TRY_CAST(c.pay_rate as float) * 0.30, 'F2') 
+                        WHEN a.type = 'Legal Holiday' THEN FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                        WHEN a.type = 'Special Non-Working Holiday' THEN FORMAT(TRY_CAST(c.pay_rate as float) * 0.30, 'F2') 
                         ELSE '0' 
                     END
                 FROM 
@@ -203,11 +203,11 @@ class HolidayController extends Controller
                     when a.type = 'Legal Holiday' then '200' 
                     when a.type = 'Special Non-Working Holiday' then '30' else '' end, 
                    
-                    case when a.type = 'Regular Holiday' then FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                    when a.type = 'Special Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') 
-                    when a.type = 'Special Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') 
-                    when a.type = 'Legal Holiday' then FORMAT(cast(c.pay_rate as float) * 2, 'F2') 
-                    when a.type = 'Special Non-Working Holiday' then FORMAT(cast(c.pay_rate as float) * .30, 'F2') else '0' end holidayamount,
+                    case when a.type = 'Regular Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                    when a.type = 'Special Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') 
+                    when a.type = 'Special Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') 
+                    when a.type = 'Legal Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * 2, 'F2') 
+                    when a.type = 'Special Non-Working Holiday' then FORMAT(TRY_CAST(c.pay_rate as float) * .30, 'F2') else '0' end holidayamount,
 
                     '0','$getperiod','0' from set_holidays a left join employee_attendance_posts b on a.employee_no = b.employee_no left join employees c on b.employee_no = c.employee_no
                      where b.date != '$datesched' and b.empcode != '21010'
@@ -227,7 +227,7 @@ class HolidayController extends Controller
 
 
                /*  $updateattendance7 = "
-                Delete FROM employee_attendance_posts WHERE cast(date as date) = '$datesched' and employee_no = employee_no and holiday_type is null and day != 'HOLIDAY'
+                Delete FROM employee_attendance_posts WHERE TRY_CAST(date as date) = '$datesched' and employee_no = employee_no and holiday_type is null and day != 'HOLIDAY'
                 ";
 
                 DB::statement($updateattendance7);

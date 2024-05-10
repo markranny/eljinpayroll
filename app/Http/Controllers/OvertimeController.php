@@ -30,19 +30,18 @@ class OvertimeController extends Controller
     --------------------------------------------------------------*/
 
     public function overtimenav()
-    {
-        $employees = DB::table('employees')
-                    ->orderBy('fullname', 'ASC')
+{
+    $employees = DB::table('employees')
+                    ->orderBy('lastname', 'ASC')
                     ->get();
 
-                    $empposts = DB::table('emp_posts')
+        $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
                     ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
-
-        return view('HR.overtime_nav', compact('employees','empposts'));
-    }
+    return view('HR.overtime_nav', compact('employees', 'empposts'));
+}
 
     /*--------------------------------------------------------------
     # ADD OVERTIME RECORDS
@@ -72,16 +71,23 @@ class OvertimeController extends Controller
         $remarks = request('remarks');
         $ottypes = request('ottypes');
 
+        
+
         $employee_data = DB::table('employees')
-        ->select('employee_no')
-        ->where('fullname', $employee_name)
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
         ->first();
+
+        
 
         if($employee_data != null){
             $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
         }else{
             return back()->with('error','Please Select employee');
         }
+
+        /* dd($fullname); */
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -112,11 +118,13 @@ class OvertimeController extends Controller
 
 
         if($filter<1){
-            if($employeeattendanceid != null && $employee_no != null && $employee_name != null &&  $datesched != null && $timein != null && $timeout != null && $remarks != null){
+            
+            if($employeeattendanceid != null && $employee_no != null && $employee_name != null &&  $datesched != null && $timein != null && $timeout != null && $remarks != null ||
+                $employeeattendanceid != 'You need to create a payroll code first' && $employee_no != null && $employee_name != null &&  $datesched != null && $timein != null && $timeout != null && $remarks != null){
                 $update = new overtimes();
                 $update->employeeattendanceid   =   $employeeattendanceid;
                 $update->employee_no   =   $employee_no;
-                $update->employee_name   =   $employee_name;
+                $update->employee_name   =   $fullname;
                 $update->working_schedule   =   request('datesched');
                 $update->ot_in   =   request('timein');
                 $update->ot_out   =   request('timeout');
@@ -130,7 +138,7 @@ class OvertimeController extends Controller
                         Log::info('Add Overtime');
 
                         $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('Overtime', 'Add OB table', getdate())
+                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('Overtime', 'Add Overtime table', getdate())
                         ";
                         DB::statement($statuslogs);
         
@@ -139,20 +147,32 @@ class OvertimeController extends Controller
                 $timetotal = (int)$timesum2 - (int)$timesum1;
 
 
-                $filter3 = DB::table('overtimes as a')
+            /* $filter3 = DB::table('overtimes as a')
             ->leftJoin('employee_attendance_posts as b', 'a.employee_no', '=', 'b.employee_no')
             ->where('b.date', '=', $datesched)
-            ->count();
+            ->count(); */
 
-            if($filter3 == 0) { // Changed the condition to check if $filter3 equals zero
+            $filter50 = DB::table('overtimes as a')
+                ->leftJoin('employee_attendance_posts as b', 'a.employee_no', '=', 'b.employee_no')
+                ->whereRaw('CAST(b.date AS DATE) = ?', [$datesched])
+                ->where('b.employee_no', '=', $employee_no)
+                ->count();
+
+            if($filter50 == 0) { 
+                $employeeattendanceid = request('employeeattendanceid');
+                $employee_name = request('employee_name');
+                $datesched = request('datesched');
+                $timein = request('timein');
+                $timeout = request('timeout');
+                $remarks = request('remarks');
+                $ottypes = request('ottypes');
+                
                 DB::table('employee_attendance_posts')->insert([
                     'employeeattendanceid' => $employeeattendanceid,
-                    'employee_name' => $employee_name,
+                    'employee_name' => $fullname,
                     'employee_no' => $employee_no,
                     'date' => $datesched,
                     'day' => 'RESTDAY OVERTIME',
-                    'schedin' => '00:00:00.0000000',
-                    'schedout' => '00:00:00.0000000',
                     'in1' => $timein,
                     'out2' => $timeout,
                     'hours_work' => $timetotal,
@@ -164,10 +184,31 @@ class OvertimeController extends Controller
                     'minutes_late' => '0',
                     'udt' => '-',
                     'udt_hrs' => '0',
-                    'nightdif' => '0',
+                    'nightdif' => DB::raw("CASE WHEN DATEPART(hour, CAST('$timein' AS time)) >= 19 THEN '1' ELSE '0' END"),
                     'overtime' => $timetotal,
                     'period' => $getperiod,
                     'status' => '0'
+
+                    /* 'employeeattendanceid' => '0000000001',
+                    'employee_name' => 'AGLAPAY MARK RANNY',
+                    'employee_no' => '7889',
+                    'date' => '2023-09-29',
+                    'day' => 'RESTDAY OVERTIME',
+                    'in1' => '08:00:00',
+                    'out2' => '17:00:00',
+                    'hours_work' => '9',
+                    'working_hour' => '9',
+                    'totalhrsneeds' => '0',
+                    'totalhrs' => '9',
+                    'totalhrsearned' => '9',
+                    'ctlate' => '0',
+                    'minutes_late' => '0',
+                    'udt' => '-',
+                    'udt_hrs' => '0',
+                    'nightdif' => '0',
+                    'overtime' => '9',
+                    'period' => '2nd Period',
+                    'status' => '0' */
                 ]);
             } else {
                 DB::table('employee_attendance_posts')
@@ -231,6 +272,12 @@ class OvertimeController extends Controller
             $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
             if ($recordExists) {
                 DB::table($tableName)->where('id', $idToDelete)->delete();
+
+                DB::table('employee_attendance_posts')
+                ->where('day', 'RESTDAY OVERTIME')
+                ->where('employee_no', $employee_no)
+                ->where('date', $working_schedule)
+                ->delete();
     
                 // Assuming you want to update 'overtime' field in 'employee_attendance_posts' where ID is $idToDelete
                 DB::table('employee_attendance_posts')
@@ -238,11 +285,19 @@ class OvertimeController extends Controller
                     ->update([
                         'overtime' => 0
                     ]);
-    
+
+                    DB::table('employee_attendance_posts')
+                    ->where('day', 'RESTDAY OVERTIME')
+                    ->where('id', $idToDelete)
+                    ->delete();
+
+                    /* DB::table('employee_attendance_posts')->where('day', 'RESTDAY OVERTIME')->where('id', $idToDelete)->exists(); */
+
                 return response()->json(['message' => 'success']);
             } else {
                 return response()->json(['message' => 'fail']);
             }
+
         } else {
             return back()->with('error', 'The Data is already posted!');
         }

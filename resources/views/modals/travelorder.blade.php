@@ -21,7 +21,7 @@
                 <select class="selectpicker" data-live-search="true" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
                     <option disabled>BW EMPLOYEES</option>
                         @foreach ($employees as $data)
-                            <option value="{{$data->lastname}} {{$data->firstname}}" >{{$data->lastname}} {{$data->firstname}}</option>
+                            <option value="{{$data->employee_no}}" >{{$data->lastname}} {{$data->firstname}}</option>
                         @endforeach
                 </select>
                 </div>

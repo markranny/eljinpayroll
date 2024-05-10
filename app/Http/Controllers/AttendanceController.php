@@ -344,7 +344,7 @@ class AttendanceController extends Controller
                   // Assuming you have a query builder instance, such as $queryBuilder
                   $statement = "
                     INSERT INTO employee_attendance_savestates(employee_no, date, day, in1, out1, in2, out2, nextday, hours_work) SELECT employee_no, date, day, in1, out1, in2, out2, nextday, hours_work FROM employee_upload_attendances
-                    
+                    where cast(date as date) between '$fromdate' and '$todate'
                     ";
                     DB::statement($statement);
 

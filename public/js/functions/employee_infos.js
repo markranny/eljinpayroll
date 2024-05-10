@@ -21,7 +21,7 @@ $(function () {
   scrollY: "400px",
   scrollcollapse: true,
   
-  "lengthMenu": [[5, 10, 20, -1], [5, 10, 20, "All"]],
+  "lengthMenu": [[10, 20, 100, -1], [10, 20, 100, "All"]],
 
    dom: '<"top"fl<"clear">>rt<"bottom"ip<"clear">>',
 
@@ -80,6 +80,14 @@ $(function () {
           {data: 'job_title', name: 'job_title'},
 
           {data: 'hired_date', name: 'hired_date'},
+
+          {data: 'endcontract', name: 'endcontract'},
+
+          {data: 'pay_type', name: 'pay_type'},
+
+          {data: 'pay_rate', name: 'pay_rate'},
+
+          {data: 'allowance', name: 'allowance'},
 
           {data: 'sss_no', name: 'sss_no'},
 

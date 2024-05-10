@@ -15,9 +15,21 @@ class IsHR
      */
     public function handle($request, Closure $next)
     {
-        if(auth()->user()->role == 'HR' || auth()->user()->role == 'ADMIN'){
+        /* if(auth()->user()->role == 'HR' || auth()->user()->role == 'ADMIN'){
             return $next($request);
         }
-        return redirect()->away('http://127.0.0.1:8000/404');
+        else{
+            return view('auth.login');
+        } */
+
+        if (auth()->check()) {
+            if (auth()->user()->role == 'HR' || auth()->user()->role == 'ADMIN') {
+                return $next($request);
+            } else {
+                return redirect()->route('home');
+            }
+        } else {
+            return redirect('/login');
+        }
     }
 }

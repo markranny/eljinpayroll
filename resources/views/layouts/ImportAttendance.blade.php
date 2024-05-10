@@ -1,34 +1,35 @@
 <div class="LayoutTable">
 
-<div class="card table-header">
-    <div class="card-body">
-        <!-- Import Attendance -->
-        <div class="float-right">
+    <div class="card table-header">
+        <div class="card-body">
+            <!-- Import Attendance -->
+            <div class="float-right">
 
-            <div class="row">
-                <div class="col-4">
-                <form id="importA-form" action="{{ route('importA') }}" method="POST">
-                @csrf
-                    <input type="file" class="form-control" name="file" id="file" />
-                </form>
-                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <form id="importA-form" action="{{ route('importA') }}" method="POST">
+                        @csrf
+                            <input type="file" class="form-control" name="file" id="file" />
+                        </form>
+                    </div>
 
-                <div class="col-2">
-                    <a class="btn btn-primary btn-sm" href="{{ route('importA') }}" onclick="event.preventDefault(); document.getElementById('importA-form').submit();">Import</a>
-                </div>
+                    <div class="col-2">
+                        <a class="btn btn-primary btn-sm" href="{{ route('importA') }}" onclick="event.preventDefault(); document.getElementById('importA-form').submit();">Import</a>
+                    </div>
 
-                <div class="col-2">
-                    <a class="btn btn-danger btn-sm" href="{{ route('clearA') }}">Clear</a>
-                </div>
-                
-                <div class="col-2">
-                    <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" style="color: #ffff !important">Save</a>
-                </div>
+                    <div class="col-2">
+                        <a class="btn btn-danger btn-sm" href="{{ route('clearA') }}">Clear</a>
+                    </div>
+                    
+                    <div class="col-2">
+                        <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" style="color: #ffff !important">Save</a>
+                    </div>
 
-                <div class="col-2">
-                    <a class="btn btn-primary btn-sm" href="{{ route('attlist') }}">EAC</a>
+                    <div class="col-2">
+                        <!-- <a class="btn btn-primary btn-sm" href="{{ route('attlist') }}">EAC</a> -->
+                        <a class="btn btn-primary btn-sm" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">EAC</a>
+                    </div>
                 </div>
-              </div>
             </div>
         </div>
     </div>

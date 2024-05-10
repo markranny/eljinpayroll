@@ -9,10 +9,10 @@
             <div class="row">
         
                 <div class="col-4">
-                <form id="importE-form" action="{{ route('importE') }}" method="POST">
-                @csrf
-                    <input type="file" class="form-control" name="file" id="file" />
-                </form>
+                    <form id="importE-form" action="{{ route('importE') }}" method="POST">
+                    @csrf
+                        <input type="file" class="form-control" name="file" id="file" />
+                    </form>
                 </div>
 
                 <div class="col-2">

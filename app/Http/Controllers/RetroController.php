@@ -27,8 +27,14 @@ class RetroController extends Controller
     public function retronav(Request $request)
     {
         $employees = DB::table('employees')
-                ->orderBy('lastname', 'ASC')
-                ->get();
+                    ->orderBy('lastname', 'ASC')
+                    ->get();
+
+        $empposts = DB::table('emp_posts')
+                    ->select('employeeattendanceid')
+                    ->orderBy('employeeattendanceid', 'DESC')
+                    ->limit(1)
+                    ->get();
         return view('HR.retro_nav', ['employees'=>$employees]);
     }
 
@@ -46,9 +52,23 @@ class RetroController extends Controller
     
     public function addretro(Request $request)
     {
-        $employee_no = request('employee_no');
+        $employeeattendanceid = request('employeeattendanceid');
+        $employee_name = request('employee_name');
         $working_schedule = request('working_schedule');
         $active_date = request('working_schedule');
+        $retrohrs = request('retrohrs');
+
+        $employee_data = DB::table('employees')
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
+        ->first();
+
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($working_schedule)->format('d');
         $getmonth = Carbon::parse($working_schedule)->format('F');
@@ -69,11 +89,13 @@ class RetroController extends Controller
 
         if($filter<1){
 
-            if($employee_no != '' || $working_schedule != '' || $active_date != ''){
+            if($employee_name != '' || $working_schedule != '' || $retrohrs != '' || $active_date != ''){
                 $update = new retros();
-                $update->employee_no   =   request('employee_no');
+                $update->employee_no   =   $employee_no ; 
+                $update->employee_name   =   $fullname; 
                 $update->working_schedule   =   request('date');
                 $update->active_date   =   request('activedate');
+                $update->retrohrs   =   request('retrohrs');
                 $update->remarks   =   request('remarks');
                 $update->month   =   $getmonth;
                 $update->year   = $getyear;

@@ -36,7 +36,7 @@ class TravelOrderController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -71,11 +71,18 @@ class TravelOrderController extends Controller
         $remarks = request('remarks');
 
         $employee_data = DB::table('employees')
-        ->select('employee_no')
-        ->where('fullname', $employee_name)
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
         ->first();
 
-        $employee_no = $employee_data->employee_no;
+        
+
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -100,7 +107,7 @@ class TravelOrderController extends Controller
                         $update = new obs();
                         $update->employeeattendanceid   =   request('employeeattendanceid');
                         $update->employee_no   =   $employee_no;
-                        $update->employee_name   =   $employee_name;
+                        $update->employee_name   =   $fullname;
                         $update->date_sched   =   request('datesched');
                         $update->location   =   request('location');
                         $update->remarks   =   request('remarks');
@@ -124,7 +131,7 @@ class TravelOrderController extends Controller
 
                         DB::table('employee_attendance_posts')->insert([
                             'employeeattendanceid' => $employeeattendanceid,
-                            'employee_name' => $employee_name,
+                            'employee_name' => $fullname,
                             'employee_no' => $employee_no,
                             'date' => $datesched,
                             'day' => 'OB',

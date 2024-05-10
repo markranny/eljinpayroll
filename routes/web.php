@@ -102,6 +102,7 @@ Route::post('post-employees', 'ScheduleController@palS')->name('palS')->middlewa
 Route::get('updatesched/{employee_no}', 'ScheduleController@updatesched')->name('updatesched')->middleware('is_hr');
 
 Route::post('ec-add-Schedule', 'ScheduleController@ecaddsched')->name('ecaddsched')->middleware('is_hr');
+Route::get('/delete/addsched/{employee_no}/{date_sched}', 'ScheduleController@delsched')->name('delsched')->middleware('is_hr');
 Route::get('/delete/schedule/{id}', 'ScheduleController@delete_schedule')->name('delete_schedule')->middleware('is_hr');
 Route::post('/update/schedule/', 'ScheduleController@update_schedule')->name('update_schedule')->middleware('is_hr');
 
@@ -230,6 +231,7 @@ Route::get('debit-list', 'PayrollController@debitsummarynav')->name('debitsummar
 Route::get('debit-data', 'PayrollController@debitsummarydata')->name('debitsummarydata')->middleware('is_finance');
 Route::get('credit-list', 'PayrollController@creditsummarynav')->name('creditsummarynav')->middleware('is_finance');
 Route::get('credit-data', 'PayrollController@creditsummarydata')->name('creditsummarydata')->middleware('is_finance');
+Route::post('sentpayrollmaster', 'PayrollController@sentpayrollmaster')->name('sentpayrollmaster')->middleware('is_finance');
 
 /*--------------------------------------------------------------
     # DEDUCTION LIST

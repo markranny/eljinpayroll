@@ -1,12 +1,11 @@
 
 
-<div class="card">
+<div class="card table-header">
         <div class="card-body">
-            Payroll List
             <div class="float-right">
                 <div class="row">
                     <div class="col-2">
-                        <a class="btn btn-success btn-sm" href="{{ route('edtrplugin') }}">PAYROLL PLUGIN</a>
+                        <a class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" href="">EXECUTE PAYROLL CODE</a>
                     </div>
                 </div>
             </div>
@@ -25,17 +24,12 @@
                         <th style="width: 200px !important;">Employee_Name</th>
                         <th style="width: 200px !important;">Department</th>
                         <th style="width: 100px !important;">Job_Status</th>
-                        <th style="width: 100px !important;">Rank_File</th>
-                        <th style="width: 100px !important;">RegularDays</th>
-                        <th style="width: 100px !important;">DaysEarned</th>
-                        <th style="width: 100px !important;">GrossAmount</th>
-                        <th style="width: 100px !important;">NetAmount</th>
-                        <th style="width: 100px !important;">TotalDeduction</th>
-                        <th style="width: 100px !important;">TotalContribution</th>
-                        <th style="width: 100px !important;">TotalOtherDeductions</th>
-                        <th style="width: 100px !important;">month</th>
-                        <th style="width: 100px !important;">year</th>
-                        <th style="width: 100px !important;">period</th>
+                        <th style="width: 100px !important;">NETSALARY</th>
+                        <th style="width: 100px !important;">BONDDEPO</th>
+                        <th style="width: 100px !important;">MUTUALSHARE</th>
+                        <th style="width: 100px !important;">MONTH</th>
+                        <th style="width: 100px !important;">YEAR</th>
+                        <th style="width: 100px !important;">PERIOD</th>
                         </tr>
                     </thead>
                     <tfoot class="table-footer">
@@ -45,14 +39,9 @@
                         <th style="width: 200px !important;">-</th>
                         <th style="width: 200px !important;">-</th>
                         <th style="width: 100px !important;">-</th>
-                        <th style="width: 100px !important;">-</th>
-                        <th style="width: 100px !important;">RegularDays</th>
-                        <th style="width: 100px !important;">DaysEarned</th>
-                        <th style="width: 100px !important;">GrossAmount</th>
-                        <th style="width: 100px !important;">NetAmount</th>
-                        <th style="width: 100px !important;">TotalDeduction</th>
-                        <th style="width: 100px !important;">TotalContribution</th>
-                        <th style="width: 100px !important;">TotalOtherDeductions</th>
+                        <th style="width: 100px !important;">NETSALARY</th>
+                        <th style="width: 100px !important;">BONDDEPO</th>
+                        <th style="width: 100px !important;">MUTUALSHARE</th>
                         <th style="width: 100px !important;">-</th>
                         <th style="width: 100px !important;">-</th>
                         <th style="width: 100px !important;">-</th>
@@ -66,6 +55,52 @@
     </div>
 </div>
         
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h3 class="modal-title" style="font-weight: bold">Payroll Master</h3>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+
+			<div class="modal-body">
+                <form method="POST" action="{{ route('sentpayrollmaster') }}" enctype="multipart/form-data" >
+                @csrf  
+
+                <div class="row">
+
+                <div class="col-6">
+                <div class="form-group">
+                    <a style="color: red;">CURRENT PAYROLL CODE</a>
+                </div>
+                </div>
+                
+                
+                </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                                    {{ __('PROCESS') }}
+                                </button>
+                                {{ csrf_field() }}
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </form>
+			</div>
+
+
+			    <div class="modal-footer">
+                    
+			</div>
+		</div>
+	</div>
+</div>
+
+
 <script type="text/javascript" src="{{asset('js/functions/payrolldata.js')}}">
 </script>
 

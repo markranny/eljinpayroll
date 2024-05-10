@@ -38,7 +38,7 @@ class ScheduleController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -79,8 +79,8 @@ class ScheduleController extends Controller
         $timeout = request('timeout');
 
         $employee_data = DB::table('employees')
-            ->select('employee_no','department','line')
-            ->where('fullname', $employee_name)
+            ->select('employee_no','fullname','department','line')
+            ->where('employee_no', $employee_name)
             ->first();
 
         if (!$employee_data) {
@@ -88,6 +88,7 @@ class ScheduleController extends Controller
         }
 
         $employee_no = $employee_data->employee_no;
+        $emp_name = $employee_data->fullname;
         $department = $employee_data->department;
         $line = $employee_data->line;
 
@@ -112,7 +113,7 @@ class ScheduleController extends Controller
             while ($start_date <= $end_date) {
                 $update = new employee_schedule_temps(); // Assuming EmployeeScheduleTemp is your model name
                 $update->employee_no = $employee_no;
-                $update->employee_name = $employee_name;
+                $update->employee_name = $emp_name;
                 $update->department = $department;
                 $update->line = $line;
                 $update->date_sched = $start_date->toDateString();
@@ -486,5 +487,27 @@ class ScheduleController extends Controller
         
     }
 
+    /*--------------------------------------------------------------
+    # DELETE IMPORTED SCHEDULE
+    --------------------------------------------------------------*/
+
+    public function delsched($employee_no, $date_sched) {
+        try {
+            $tableName = 'employee_schedule_temps';
+            $idToDelete = $employee_no;
+    
+            // Check if record exists before deleting
+            $recordExists = DB::table($tableName)->where('employee_no', $idToDelete)->where('date_sched', $date_sched)->exists();
+            
+            if ($recordExists) {
+                DB::table($tableName)->where('employee_no', $idToDelete)->where('date_sched', $date_sched)->delete();
+                return response()->json(['message' => 'success']);
+            } else {
+                return response()->json(['message' => 'Record not found.']);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'An error occurred while deleting the record.', 'error' => $e->getMessage()], 500);
+        }
+    }
     
 }

@@ -35,7 +35,7 @@ class SlvlController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -77,14 +77,19 @@ class SlvlController extends Controller
         $status = request('status');
         $remarks = request('remarks');
 
-        //GET EMPLOYEENAME
         $employee_data = DB::table('employees')
-        ->select('employee_no')
-        ->where('fullname', $employee_name)
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
         ->first();
 
-        //SET EMPLOYEENO BASED ON EMPLOYEEDATA
-        $employee_no = $employee_data->employee_no;
+        
+
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         //SET DAY FORMAT USING CARBON
         $getday = Carbon::parse($datesched)->format('d');
@@ -134,7 +139,7 @@ class SlvlController extends Controller
                         $update = new slvls();
                         $update->employeeattendanceid   =   request('employeeattendanceid');
                         $update->employee_no   =   $employee_no;
-                        $update->employee_name   =   $employee_name;
+                        $update->employee_name   =   $fullname;
                         $update->date_sched   =   request('datesched');
                         $update->type   =   request('type');
                         $update->status   =   request('status');
@@ -164,7 +169,7 @@ class SlvlController extends Controller
 
                         DB::table('employee_attendance_posts')->insert([
                             'employeeattendanceid' => $employeeattendanceid,
-                            'employee_name' => $employee_name,
+                            'employee_name' => $fullname,
                             'employee_no' => $employee_no,
                             'date' => $datesched,
                             'day' => 'SLVL',
@@ -197,19 +202,19 @@ class SlvlController extends Controller
                                 ->get();
 
                         $sl = "
-                        INSERT INTO sickleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$employee_name','$status', '$datesched',  getdate() from slvls where type = 'SICK LEAVE' 
+                        INSERT INTO sickleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$fullname','$status', '$datesched',  getdate() from slvls where type = 'SICK LEAVE' 
                         and month = '$getmonth' and year = '$getyear' and period = '$getperiod';
                         ";
                         DB::statement($sl);
 
                         $vl = "
-                        INSERT INTO vacationleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$employee_name','$status', '$datesched', getdate() from slvls where type = 'VACATION LEAVE' 
+                        INSERT INTO vacationleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$fullname','$status', '$datesched', getdate() from slvls where type = 'VACATION LEAVE' 
                         and month = '$getmonth' and year = '$getyear' and period = '$getperiod';
                         ";
                         DB::statement($vl);
 
                         $ml = "
-                        INSERT INTO vacationleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$employee_name','$status', '$datesched', getdate() from slvls where type = 'MATERNITY LEAVE' 
+                        INSERT INTO vacationleave (employee_no, employee_name, type, slvldate, modifieddate) select '$employee_no','$fullname','$status', '$datesched', getdate() from slvls where type = 'MATERNITY LEAVE' 
                         and month = '$getmonth' and year = '$getyear' and period = '$getperiod';
                         ";
                         DB::statement($ml);

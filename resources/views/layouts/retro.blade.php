@@ -26,6 +26,7 @@
                         <th>Employee_Name</th>
                         <th>Date</th>
                         <th>Active_Date</th>
+                        <th>Retro_hrs</th>
                         <th>status</th>
                         <th>Remarks</th>
                         <th>Month</th>
@@ -85,6 +86,8 @@
 
             {data: 'active_date', name: 'active_date'},
 
+            {data: 'retrohrs', name: 'retrohrs'},
+
             {data: 'remarks', name: 'remarks'},
 
             {data: 'status', name: 'status'},
@@ -94,8 +97,6 @@
             {data: 'year', name: 'year'},
 
             {data: 'period', name: 'period'}
-
-
     ]
 
     });

@@ -39,9 +39,30 @@
     </div>
 </div>
        
-
-
 <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<span class="modal-title font-weight-bold">DELETE?</span>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+
+
+			<div class="modal-body">
+                Are you sure you want to delete this?
+			</div>
+
+
+			<div class="modal-footer" id="delete-footer">
+                 
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -61,7 +82,7 @@
 			</div>
 		</div>
 	</div>
-</div>
+</div> -->
 
 
 <!-- Bootstrap Basic Modal -->
@@ -95,7 +116,7 @@
                 <select class="selectpicker" data-live-search="true" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
                     <option disabled>BW EMPLOYEES</option>
                         @foreach ($employees as $data)
-                            <option value="{{$data->lastname}} {{$data->firstname}}" >{{$data->lastname}} {{$data->firstname}}</option>
+                            <option value="{{$data->employee_no}}" >{{$data->lastname}} {{$data->firstname}}</option>
                         @endforeach
                 </select>
                 </div>
@@ -206,18 +227,18 @@ function loadData() {
         });
     }
  
-    //function setDeleteButton(id){
-        //$("#delete-footer").html(`
-        //<button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteFunction(${id})">Delete</button>   
-        //<button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
-        //`);
-    //} 
-
     function setDeleteButton(id){
-        $("#delete-footer").html(` 
+        $("#delete-footer").html(`
+        <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteFunction(${id})">Delete</button>   
         <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
         `);
     } 
+
+    /* function setDeleteButton(id){
+        $("#delete-footer").html(` 
+        <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+        `);
+    }  */
 
     function deleteFunction(id){
     $.ajax({

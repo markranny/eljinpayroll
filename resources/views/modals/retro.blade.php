@@ -15,7 +15,7 @@
                 @csrf  
 
                 <div class="form-group">
-                <select class="selectpicker" name="employee_no" data-style="select-with-transition" multiple title="Choose Employee">
+                <select class="selectpicker" data-live-search="true" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
                     <option disabled>BW EMPLOYEES</option>
                         @foreach ($employees as $data)
                             <option value="{{$data->employee_no}}" >{{$data->lastname}} {{$data->firstname}}</option>
@@ -31,6 +31,11 @@
                 <div class="form-group">
                     <label>ACTIVE DATE</label><br>
                     <input type="text" name="activedate" class="form-control datepicker" placeholder="Select Date"><br>
+                </div>
+
+                <div class="form-group">
+                    <label>RETRO HRS</label><br>
+                    <input type="text" name="retrohrs" class="form-control" placeholder="Input Retro Hrs"><br>
                 </div>
     
                 <div class="form-group">

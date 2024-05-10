@@ -1,27 +1,21 @@
-
-
-    <div class="card">
+<div class="LayoutTable">
+    <div class="card table-header">
         <div class="card-body">
-            Holiday
             <div class="float-right">
                 <div class="row">
-                <div class="col-2">
-                        <!-- <a class="btn btn-success btn-sm" href="{{ route('attendancepostsplugin') }}">Add</a> -->
-
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">Set Holiday</button>
-
+                    <div class="col-2">
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">Set Holiday</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-
-
-     <div class="card">
+    </div>    
+</div>
+        
+    <div class="card">
         <div class="card-body">
             <div class="material-datatables">
-                <table id="holiday" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                <table id="holiday" class="table table-striped table-no-bordered table-hover">
                     <thead>
                         <tr>
                         <th>HolidayID</th>
@@ -34,11 +28,6 @@
             </div>
         </div>
     </div>
-
-        </div>
-    </div>
-</div>
-        
 
 <!-- Bootstrap Basic Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -150,7 +139,7 @@
 
     serverSide: true,
 
-    dom: 'Bfrtp',
+    dom: 'lBfrtp',
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 

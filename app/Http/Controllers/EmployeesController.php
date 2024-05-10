@@ -580,7 +580,7 @@ class EmployeesController extends Controller
                     'employee_no', 'lastname', 'firstname', 'middlename', 'suffix', 'gender', 'educational_attainment', 'degree',
                     'civil_status', 'birthdate', 'contact_no', 'email', 'present_address', 'permanent_address', 'emergency_contact_name',
                     'emergency_contact', 'emergency_relationship', 'employee_status', 'job_status', 'rank_file', 'department', 'line',
-                    'job_title', 'hired_date', 'pay_rate', 'sss_no', 'philhealth_no', 'hdmf_no', 'tax_no', 'taxable', 'costcenter',
+                    'job_title', 'hired_date', 'endcontract', 'pay_type', 'pay_rate', 'allowance', 'sss_no', 'philhealth_no', 'hdmf_no', 'tax_no', 'taxable', 'costcenter',
                     'empcode'
                 ],
                 function ($query) {
@@ -588,7 +588,7 @@ class EmployeesController extends Controller
                         'employee_no', 'lastname', 'firstname', 'middlename', 'suffix', 'gender', 'educational_attainment', 'degree',
                         'civil_status', 'birthdate', 'contact_no', 'email', 'present_address', 'permanent_address', 'emergency_contact_name',
                         'emergency_contact', 'emergency_relationship', 'employee_status', 'job_status', 'rank_file', 'department', 'line',
-                        'job_title', 'hired_date', DB::raw('cast(pay_rate as float)'), 'sss_no', 'philhealth_no', 'hdmf_no', 'tax_no',
+                        'job_title', 'hired_date', 'endcontract', 'pay_type', 'pay_rate', 'allowance', 'sss_no', 'philhealth_no', 'hdmf_no', 'tax_no',
                         'taxable', 'costcenter', 'empcode'
                     )->from('employees_detail_temps');
                 }

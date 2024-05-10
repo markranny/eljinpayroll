@@ -34,7 +34,7 @@ class CSController extends Controller
 
         $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -74,12 +74,15 @@ class CSController extends Controller
         $remarks = request('remarks');
 
         $employee_data = DB::table('employees')
-        ->select('employee_no')
-        ->where('fullname', $employee_name)
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
         ->first();
+
+        
 
         if($employee_data != null){
             $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
         }else{
             return back()->with('error','Please Select employee');
         }
@@ -119,7 +122,7 @@ class CSController extends Controller
                 $update = new changeoffs();
                 $update->employeeattendanceid   =   $employeeattendanceid;
                 $update->employee_no   =   $employee_no;
-                $update->employee_name   =   $employee_name;
+                $update->employee_name   =    $fullname;
                 $update->working_schedule   =   request('datesched');
                 $update->new_working_schedule   =   request('newdatesched');
                 $update->time_in  =   request('timein');
@@ -147,7 +150,7 @@ class CSController extends Controller
 
                 DB::table('employee_attendance_posts')->insert([
                     'employeeattendanceid' => $employeeattendanceid,
-                    'employee_name' => $employee_name,
+                    'employee_name' =>  $fullname,
                     'employee_no' => $employee_no,
                     'date' => $newdatesched,
                     'day' => 'CHANGEOFF',
@@ -182,7 +185,7 @@ class CSController extends Controller
                 ";
                 DB::statement($updateattendance2); */
 
-                DB::table('employee_schedule_posts')
+                /* DB::table('employee_schedule_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date_sched', $datesched)
                 ->update(['change_sched' => $datesched]);
@@ -193,17 +196,17 @@ class CSController extends Controller
                 $statuslogs = "
                 INSERT INTO statuslogs (linecode, functions, modifieddate) values ('ChangeOff', 'Update employee_schedule_posts table', getdate())
                 ";
-                DB::statement($statuslogs);
+                DB::statement($statuslogs); */
 
                 /* $updateattendance3 = "
                 update employee_schedule_posts set date_sched = '$newdatesched' where employee_no = '$employee_no' and date_sched = '$datesched'
                 ";
                 DB::statement($updateattendance3); */
 
-                DB::table('employee_schedule_posts')
+                /* DB::table('employee_schedule_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date_sched', $datesched)
-                ->update(['date_sched' => $newdatesched]);
+                ->update(['date_sched' => $newdatesched]); */
 
 
                 $employees = DB::table('employees')
@@ -345,7 +348,7 @@ class CSController extends Controller
 
 
 
-                $updateattendance2 = "
+                /* $updateattendance2 = "
                 update employee_schedule_posts set change_sched = '$datesched' where employee_no = '$employee_no' and date_sched = '$datesched'
                 ";
                 DB::statement($updateattendance2);
@@ -355,7 +358,7 @@ class CSController extends Controller
                 update employee_schedule_posts set date_sched = '$newdatesched' where employee_no = '$employee_no' and date_sched = '$datesched'
                 ";
                 DB::statement($updateattendance3);
-
+                */
                 return response()->json(['message' => 'success']);
 
 

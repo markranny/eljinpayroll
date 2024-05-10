@@ -133,8 +133,15 @@
                   </a>
                 </li>
                 <li class="nav-item ">
+                  <a class="nav-link" href="{{ route('holidaynav') }}">
+                    <span class="sidebar-mini"> SH </span>
+                    <span class="sidebar-normal"> Set Holidays (HR) </span>
+                  </a>
+                </li>
+                <li class="nav-item ">
                   <!-- <a class="nav-link" href="{{ route('attreport') }}"> -->
-                  <a class="nav-link" href="{{ route('attendancepostsplugin') }}">
+                  <!-- <a class="nav-link" href="{{ route('attendancepostsplugin') }}"> -->
+                  <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                     <span class="sidebar-mini"> EC </span>
                     <span class="sidebar-normal"> DRAFT </span>
                   </a>
@@ -178,7 +185,7 @@
           @endif
 
           @if (Auth::user()->role == 'HR' || Auth::user()->role == 'ADMIN')
-          <li class="nav-item ">
+          <!-- <li class="nav-item ">
             <a class="nav-link" data-toggle="collapse" href="#componentsExamples">
               <i class="material-icons">date_range</i>
               <p> Schedule
@@ -187,15 +194,8 @@
             </a>
             <div class="collapse" id="componentsExamples">
               <ul class="nav">
-                <!-- <li class="nav-item ">
-                  <a class="nav-link" href="{{ route('holidaynav') }}">
-                    <span class="sidebar-mini"> SH </span>
-                    <span class="sidebar-normal"> Set Holidays (HR) </span>
-                  </a>
-                </li> -->
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('schedlistnav') }}"> 
-                    <!-- <a class="nav-link" href="404/dist/index.html"> -->
                     <span class="sidebar-mini"> SL </span>
                     <span class="sidebar-normal"> Schedule List </span>
                   </a>
@@ -208,7 +208,7 @@
                 </li>
               </ul>
             </div>
-          </li>
+          </li> -->
           @endif
 
           @if (Auth::user()->role == 'HR' || Auth::user()->role == 'ADMIN')
@@ -227,13 +227,13 @@
                   <p> Overtime </p>
                 </a>
               </li>
-                <!-- <li class="nav-item ">
+                <li class="nav-item ">
                   <a class="nav-link" href="{{ route('offsetnav') }}">
                     <i class="material-icons">schedule</i>
-                    <p> Offset (PER HOUR) </p>
+                    <p> Offset</p>
                   </a>
                 </li>
-                <li class="nav-item ">
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('offset2nav') }}">
                     <i class="material-icons">schedule</i>
                     <p> Offset (WHOLE DAY) </p>
@@ -242,7 +242,7 @@
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('changeoffnav') }}">
                     <i class="material-icons">pending_actions</i>
-                    <p> Change Schedule </p>
+                    <p> Change Restday </p>
                   </a>
                 </li>
                 <li class="nav-item ">
@@ -266,7 +266,7 @@
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('retronav') }}">
                     <i class="material-icons">R</i>
-                    <p> Retro </p>
+                    <p> Retro <div style="color:red">(Developer Mode)</div></p>
                   </a>
                 </li>
               </ul>
@@ -319,7 +319,8 @@
             <div class="collapse" id="reports123">
               <ul class="nav">
               <li class="nav-item ">
-                <a class="nav-link" href="{{ route('benefits') }}">
+                <!-- <a class="nav-link" href="{{ route('benefits') }}"> -->
+                <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                   <i class="material-icons">medical_information</i>
                   <p> Contribution </p>
                 </a>
@@ -346,7 +347,8 @@
             <div class="collapse" id="reports101">
               <ul class="nav">
               <li class="nav-item ">
-                <a class="nav-link" href="{{ route('deductions') }}">
+                <!-- <a class="nav-link" href="{{ route('deductions') }}"> -->
+                <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                   <i class="material-icons">trending_down</i>
                   <p> Deductions </p>
                 </a>
@@ -375,19 +377,19 @@
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('debitsummarynav') }}">
                   <i class="material-icons">credit_score</i>
-                  <p> Debit Summary </p>
+                  <p> Debit Summary <div style="color:red">(Developer Mode)</div></p>
                 </a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('creditsummarynav') }}">
                   <i class="material-icons">money_off_csred</i>
-                  <p> Credit Summary </p>
+                  <p> Credit Summary <div style="color:red">(Developer Mode)</div></p>
                 </a>
               </li>
               <li class="nav-item ">
                 <a class="nav-link" href="#">
                   <i class="material-icons">receipt_long</i>
-                  <p> Transaction Summary </p>
+                  <p> SLVL Summary <div style="color:red">(Developer Mode)</div></p>
                 </a>
               </li>
               

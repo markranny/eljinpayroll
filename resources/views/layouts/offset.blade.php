@@ -1,49 +1,39 @@
 
-
-    <div class="card">
+    <div class="card table-header">
         <div class="card-body">
-            OFFSET
             <div class="float-right">
                 <div class="row">
                 <div class="col-2">
-                        <!-- <a class="btn btn-success btn-sm" href="{{ route('attendancepostsplugin') }}">Add</a> -->
-
-                        <!-- Button trigger modal -->
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">ADD OFFSET</button>
-
+                    <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">ADD OFFSET</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-     <div class="card">
-        <div class="card-body">
-            <div class="material-datatables">
-                <table id="offset" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
-                    <thead>
-                        <tr>
-                        <th>ID</th>
-                        <th>Employee_No</th>
-                        <th>Employee_Name</th>
-                        <th>Working_Schedule</th>
-                        <th>Date</th>
-                        <th>Offset(IN)</th>
-                        <th>Offset(OUT)</th>
-                        <th>Month</th>
-                        <th>Period</th>
-                        <!-- <th>Action</th> -->
-                        </tr>
-                    </thead>
-                </table>
+        <div class="card">
+            <div class="card-body">
+                <div class="material-datatables">
+                    <table id="offset" class="table table-striped table-no-bordered table-hover" cellspacing="0" width="100%" style="width:100%">
+                        <thead>
+                            <tr>
+                            <th>ID</th>
+                            <th>Employee_No</th>
+                            <th>Employee_Name</th>
+                            <th>Working_Schedule</th>
+                            <th>Date</th>
+                            <th>Offset(IN)</th>
+                            <th>Offset(OUT)</th>
+                            <th>Month</th>
+                            <th>Period</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-        </div>
-    </div>
-</div>
+
         
 
 <!-- Bootstrap Basic Modal -->
@@ -64,34 +54,21 @@
 
                 <div class="row">
 
-                <div class="col-6">
+                <div class="col-12">
                 <div class="form-group">
-                <!-- <select class="selectpicker" name="employee_no" data-style="select-with-transition" multiple title="Choose Employee"> -->
-                <select class="selectpicker" name="employee_no" id="employee_no" data-style="select-with-transition" title="EmployeeNo" data-size="7">
-                    <option disabled>SELECT EMPLOYEENO</option>
+                <select class="selectpicker" data-live-search="true" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
+                    <option disabled>BW EMPLOYEES</option>
                         @foreach ($employees as $data)
-                            <option value="{{$data->employee_no}}" > {{$data->lastname}} {{$data->firstname}} - {{$data->employee_no}}</option>
+                            <option value="{{$data->employee_no}}" >{{$data->lastname}} {{$data->firstname}}</option>
                         @endforeach
                 </select>
                 </div>
-            </div><br><br>
+                </div><br><br>
 
-            <div class="col-6">
-            <div class="form-group">
-                <select class="selectpicker" name="employee_name" id="employee_name" data-style="select-with-transition" title="EmployeeName" data-size="7">
-                    <option disabled>BW EMPLOYEES</option>
-                        @foreach ($employees as $data)
-                            <option value="{{$data->lastname}} {{$data->firstname}}" >{{$data->lastname}} {{$data->firstname}}</option>
-                        @endforeach
-                </select>
-            </div>
-            </div><br><br>
-
-            <div class="col-12">
+                <div class="col-12">
                 <div class="form-group">
-                    <!-- <label>EMPLOYEE ATTENDANCE ID</label><br> -->
                     @foreach ($empposts as $empposts)
-                    <input type="text" name="employeeattendanceid" class="form-control" placeholder="Input Employeeattendanceid" max="10" value="{{ $empposts->employeeattendanceid }}"><br>
+                    <input type="text" name="employeeattendanceid" class="form-control" placeholder="Input Employeeattendanceid" max="10" value="{{ $empposts->employeeattendanceid }}" readonly><br>
                     @endforeach
                 </div>
                 </div>
@@ -127,37 +104,6 @@
                 </div>
                 </div>
                 </div>
-
-                <!-- <div class="row">
-                    <div class = "col-6">
-                    <div class="form-group">
-                        <select class="selectpicker" data-style="select-with-transition" multiple title="Choose Month">
-                            <option disabled>This Field is Required!</option>
-                            <option value="January">January</option>
-                            <option value="February">February</option>
-                            <option value="March">March</option>
-                            <option value="April">April</option>
-                            <option value="May">May</option>
-                            <option value="June">June</option>
-                            <option value="July">July</option>
-                            <option value="August">August</option>
-                            <option value="September">September</option>
-                            <option value="October">October</option>
-                            <option value="November">November</option>
-                            <option value="December">December</option>
-                        </select>
-                    </div></div>
-                
-                    <div class = "col-6">
-                        <div class="form-group">
-                            <select class="selectpicker" data-style="select-with-transition" multiple title="Choose Period">
-                                <option disabled>This Field is Required!</option>
-                                <option value="1st Period">1st Period</option>
-                                <option value="2nd Period">2nd Period</option>
-                            </select>
-                        </div>
-                    </div>
-                </div> -->
 
                 <button type="submit" class="btn btn-primary">
                                     {{ __('SUBMIT') }}
@@ -197,7 +143,7 @@
 
     serverSide: true,
 
-    dom: 'Bfrtp',
+    dom: 'lBfrtp',
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 

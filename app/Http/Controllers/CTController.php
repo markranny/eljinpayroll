@@ -33,7 +33,7 @@ class CTController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -145,7 +145,7 @@ class CTController extends Controller
                 // ";
                 // DB::statement($updateattendance1);
 
-                DB::table('employee_attendance_posts')
+                /* DB::table('employee_attendance_posts')
                 ->where('employee_no', $employee_no)
                 ->where('date', $datesched)
                 ->update(['date' => $newdatesched]);
@@ -161,7 +161,7 @@ class CTController extends Controller
                 $updateattendance3 = "
                 update employee_schedule_posts set date_sched = '$newdatesched' where employee_no = '$employee_no' and date_sched = '$datesched'
                 ";
-                DB::statement($updateattendance3);
+                DB::statement($updateattendance3); */
 
                 return response()->json(['message' => 'success']);
 
@@ -182,7 +182,6 @@ class CTController extends Controller
     public function changetime(Request $request)
     {
         $employeeattendanceid = request('employeeattendanceid');
-        /* $employee_no = request('employee_no'); */
         $employee_name = request('employee_name');
         $datesched = request('datesched');
         $timein = request('timein');
@@ -190,11 +189,18 @@ class CTController extends Controller
         $remarks = request('remarks');
 
         $employee_data = DB::table('employees')
-        ->select('employee_no')
-        ->where('fullname', $employee_name)
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
         ->first();
 
-        $employee_no = $employee_data->employee_no;
+        
+
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -216,7 +222,7 @@ class CTController extends Controller
                 $update = new changetimes();
                 $update->employeeattendanceid   =   $employeeattendanceid;
                 $update->employee_no   =   $employee_no;
-                $update->employee_name   =   $employee_name;
+                $update->employee_name   =   $fullname;
                 $update->in1   =   $timein;
                 $update->out1  =   $timeout;
                 $update->date  =   $datesched;
@@ -230,7 +236,7 @@ class CTController extends Controller
                 ";
                 DB::statement($statuslogs);
 
-                $updateattendance1 = "
+                /* $updateattendance1 = "
                 UPDATE employee_schedule_posts 
                 SET 
                 timess = '$timein to $timeout', 
@@ -254,7 +260,7 @@ class CTController extends Controller
                 $statuslogs = "
                 INSERT INTO statuslogs (linecode, functions, modifieddate) values ('ChangeTime', 'Update CTL', getdate())
                 ";
-                DB::statement($statuslogs);
+                DB::statement($statuslogs); */
 
                 $employees = DB::table('employees')
                 ->get();

@@ -84,7 +84,7 @@
                                 <label class="col-sm-2 col-form-label">Basic Pay</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pay_rate, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Days/Trip</label>
@@ -96,7 +96,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $basicpay?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($basicpay, 2);?>" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -105,7 +105,7 @@
                                 <label class="col-sm-2 col-form-label">SLVL</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pay_rate, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Days</label>
@@ -117,7 +117,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->slvl_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->slvl_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                                 <label class="col-sm-2 col-form-label">Holiday</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pay_rate, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">%</label>
@@ -139,7 +139,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->holiday_amount}}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->holiday_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
                                 <label class="col-sm-2 col-form-label">Off Day</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pay_rate }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pay_rate, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Days</label>
@@ -160,7 +160,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->offdays_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->offdays_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -170,7 +170,7 @@
                                 <label class="col-sm-2 col-form-label">OT Pay</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $ot ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($ot, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Total Hrs</label>
@@ -182,7 +182,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->ot_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->ot_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -192,7 +192,7 @@
                                 <label class="col-sm-2 col-form-label">Night Diff</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $nightdif ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($nightdif, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Total Hrs</label>
@@ -204,7 +204,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->nightdif_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->nightdif_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -214,7 +214,7 @@
                                 <label class="col-sm-2 col-form-label">CTLate</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $ctlaterate ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($ctlaterate, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Total Hrs</label>
@@ -226,7 +226,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->ctlate_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->ctlate_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -236,7 +236,7 @@
                                 <label class="col-sm-2 col-form-label">Late</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $late ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($late, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Total Hrs</label>
@@ -248,7 +248,7 @@
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->late_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->late_amount, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -258,35 +258,33 @@
                                 <label class="col-sm-2 col-form-label">UDT</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $udt ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($udt, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">UDT Hrs</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->udt_hrs }}" readonly>
+                                        <input type="text" class="form-control" value="{{ $data->udt_hrs * -1 }}" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-2 col-form-label">Amount</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->udt_amount }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->udt_amount * -1, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
                         </form>
 
-                            <!-- <?php $totalearnings = ($data->basic_pay + $data->ot_amount + $data->offdays_amount + $data->holiday_amount + $data->nightdif_amount + $data->slvl_amount + $data->ob_amount) - ($data->late_amount - $data->udt_amount)?> -->
-
                             <?php 
-                            $totalearnings = ($basicpay + $data->slvl_amount + $data->offdays_amount + $data->ot_amount + $data->holiday_amount + $data->nightdif_amount + $data->ctlate_amount + $data->late_amount + $data->udt_amount)
+                            $totalearnings = ($basicpay + $data->slvl_amount + $data->offdays_amount + $data->ot_amount + $data->holiday_amount + $data->nightdif_amount + $data->ctlate_amount + $data->late_amount + ($data->udt_amount * -1))
                             ?>
 
                             <div class="row">
                                 <label class="col-sm-2 col-form-label" style = "color:green !important;">Total Earnings :</label>
                                 <div class="col-sm-10">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value = "<?php echo $totalearnings ?>" style = "background-color:green !important; color: #ffff !important;" readonly>
+                                        <input type="text" class="form-control" value = "<?php echo number_format($totalearnings, 2); ?>" style = "background-color:green !important; color: #ffff !important;" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -317,7 +315,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->advance }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->advance, 2) }}" readonly>
                                     </div>
                                 </div>  
                                 <?php } ?>
@@ -335,7 +333,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->charge }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->charge, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -353,7 +351,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->uniform }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->uniform, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -371,7 +369,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->bond_deposit }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->bond_deposit, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -389,7 +387,7 @@
                                 <?php }else{?>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->meal }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->meal, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -407,7 +405,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->misc }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->misc, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -425,7 +423,7 @@
                                 <?php }else{?>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->misc }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->mutual_charge, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -436,10 +434,10 @@
                                 <label class="col-sm-4 col-form-label" style = "color:red !important;">Total Deductions :</label>
                                 <div class="col-sm-8">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $totaldeduc ?>" style = "background-color:red !important; color: #ffff !important;" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($totaldeduc, 2); ?>" style = "background-color:red !important; color: #ffff !important;" readonly>
                                     </div>
                                 </div>
-                            </div>
+                            </div><br><br>
 
                     </div>
                 </div>
@@ -468,7 +466,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->sss_loan }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->sss_loan, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -486,7 +484,7 @@
                                 <?php }else{?>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->sss_prem }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->sss_prem, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -504,7 +502,7 @@
                                 <?php }else{?>
                                     <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pag_ibig_loan }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pag_ibig_loan, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -522,7 +520,7 @@
                                 <?php }else{?>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->pag_ibig_prem }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->pag_ibig_prem, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -540,7 +538,7 @@
                                 <?php }else{?>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="{{ $data->philhealth }}" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->philhealth, 2) }}" readonly>
                                     </div>
                                 </div>
                                 <?php } ?>
@@ -552,17 +550,26 @@
                                 <label class="col-sm-3 col-form-label">Mutual Loan</label>
                                 <div class="col-sm-9">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="0" readonly>
+                                        <input type="text" class="form-control" value="{{ number_format($data->mutual_loan, 2) }}" readonly>
                                     </div>
                                 </div>
                             </div>
 
-                        <?php $totalcontri = $data->sss_loan + $data->sss_prem + $data->pag_ibig_loan + $data->pag_ibig_prem + $data->philhealth?>
+                            <div class="row">
+                                <label class="col-sm-3 col-form-label">Mutual Share</label>
+                                <div class="col-sm-9">
+                                    <div class="form-group">
+                                        <input type="text" class="form-control" value="{{ number_format($data->mutual_share, 2) }}" readonly>
+                                    </div>
+                                </div>
+                            </div>
+
+                        <?php $totalcontri = $data->sss_loan + $data->sss_prem + $data->pag_ibig_loan + $data->pag_ibig_prem + $data->philhealth + $data->mutual_loan + $data->mutual_share?>
                         <div class="row">
                                 <label class="col-sm-4 col-form-label" style = "color:orange !important;">Total Benefits Contibution:</label>
                                 <div class="col-sm-8">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value ="<?php echo $totalcontri ?>" style = "background-color:orange !important; color: #ffff !important;" readonly>
+                                        <input type="text" class="form-control" value ="<?php echo number_format($totalcontri, 2); ?>" style = "background-color:orange !important; color: #ffff !important;" readonly>
                                     </div>
                                 </div>
                             </div>
@@ -588,19 +595,19 @@
                                 <label class="col-sm-1 col-form-label">GROSS :</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $totalearnings ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($totalearnings, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-1 col-form-label">Total Deductions :</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $totaldeduc ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($totaldeduc, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-1 col-form-label">Total Contributions :</label>
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $totalcontri ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($totalcontri, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <label class="col-sm-1 col-form-label">TAX :</label>
@@ -611,7 +618,7 @@
                                 
                                 <div class="col-sm-2">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $tax ?>" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($tax, 2); ?>" readonly>
                                     </div>
                                 </div>
                                 <?php }else{?>
@@ -625,13 +632,13 @@
                             </div>
 
                             <?php 
-                                $net = $totalearnings - ($totalcontri + $totaldeduc + $data->ctlate_amount + $data->late_amount + $data->udt_amount) 
+                                $net = $totalearnings - ($totalcontri + $totaldeduc + $data->ctlate_amount + $data->late_amount + ($data->udt_amount * -1)) 
                             ?>
                             <div class="row">
                                 <label class="col-sm-1 col-form-label" style = "color:green !important;">NET :</label>
                                 <div class="col-sm-10">
                                     <div class="form-group">
-                                        <input type="text" class="form-control" value="<?php echo $net ?>" style = "background-color:green !important; color: #ffff !important;" readonly>
+                                        <input type="text" class="form-control" value="<?php echo number_format($net, 2) ?>" style = "background-color:green !important; color: #ffff !important;" readonly>
                                     </div>
                                 </div>
                             </div>

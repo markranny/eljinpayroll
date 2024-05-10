@@ -17,6 +17,7 @@ use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Dompdf\Dompdf;
 use Carbon\Carbon;
+use phpseclib3\Net\SSH2;
 use App\retros;
 use App\osphs;
 use App\wos;
@@ -24,11 +25,14 @@ use App\retros_logs;
 use App\wos_logs;
 use App\set_holidays_logs;
 use App\employee_deductions;
+use App\employee_contributions;
+use App\employee_final_attendance_posts;
 use App\employees;
 use App\changetimes;
 use TCPDF;
 use DataTables;
 use Validator;
+
 
 class HomeController extends Controller
 {
@@ -55,18 +59,70 @@ class HomeController extends Controller
 
     public function payrolllistnav()
     {
-        return view('HR.payroll_list_nav');
+        $payslip = DB::table('emp_final_posts as a')
+        ->selectRaw('
+            a.employeeattendanceid,
+            SUM(
+                (
+                    (CAST(a.pay_rate AS FLOAT) * (CAST(a.days AS FLOAT) - (CAST(a.slvl_hrs AS FLOAT) + CAST(a.offdays AS FLOAT) + CAST(a.holiday_hrs AS FLOAT)))) +
+                    CAST(a.ot_amount AS FLOAT) + 
+                    CAST(a.holiday_amount AS FLOAT) + 
+                    CAST(a.nightdif_amount AS FLOAT) + 
+                    CAST(a.offdays_amount AS FLOAT) + 
+                    CAST(a.slvl_amount AS FLOAT) +
+                    CAST(a.late_amount AS FLOAT) + 
+                    CASE WHEN CAST(a.ctlate_amount AS FLOAT) IS NOT NULL THEN CAST(a.ctlate_amount AS FLOAT) ELSE 0 END + 
+                    (CAST(a.udt_amount AS FLOAT) * -1)
+                )
+                -
+                (
+                    CAST(a.late_amount AS FLOAT) + 
+                    CASE WHEN CAST(a.ctlate_amount AS FLOAT) IS NOT NULL THEN CAST(a.ctlate_amount AS FLOAT) ELSE 0 END + 
+                    (CAST(a.udt_amount AS FLOAT) * -1) +
+                    COALESCE(CAST(d.advance AS FLOAT), 0) + 
+                    COALESCE(CAST(d.charge AS FLOAT), 0) +
+                    COALESCE(CAST(d.uniform AS FLOAT), 0) +
+                    COALESCE(CAST(d.meal AS FLOAT), 0) +
+                    COALESCE(CAST(d.misc AS FLOAT), 0) +
+                    COALESCE(CAST(d.mutual_charge AS FLOAT), 0) +
+                    COALESCE(CAST(d.bond_deposit AS FLOAT), 0) +
+                    COALESCE(CAST(c.sss_loan AS FLOAT), 0) + 
+                    COALESCE(CAST(c.sss_prem AS FLOAT), 0) +
+                    COALESCE(CAST(c.pag_ibig_loan AS FLOAT), 0) +
+                    COALESCE(CAST(c.pag_ibig_prem AS FLOAT), 0) +
+                    COALESCE(CAST(c.philhealth AS FLOAT), 0) +
+                    COALESCE(CAST(c.mutual_loan AS FLOAT), 0) +
+                    COALESCE(CAST(c.mutual_share AS FLOAT), 0) +
+                    COALESCE(CAST(c.unions AS FLOAT), 0) 
+                )
+            ) as NETSALARY')
+        ->selectRaw('CASE WHEN SUM(CAST(d.bond_deposit AS FLOAT)) IS NOT NULL THEN SUM(CAST(d.bond_deposit AS FLOAT)) ELSE 0 END AS BONDDEPO')
+        ->selectRaw('CASE WHEN SUM(CAST(c.mutual_share AS FLOAT)) IS NOT NULL THEN SUM(CAST(c.mutual_share AS FLOAT)) ELSE 0 END AS MUTUALSHARE')
+        ->select('a.month', 'a.year', 'a.period')
+        ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+        ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+        ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+        ->whereNotIn('a.employeeattendanceid', function ($query) {
+            $query->select('employeeattendanceid')->from('payroll_master');
+        })
+        ->groupBy('a.employeeattendanceid', 'a.month', 'a.year', 'a.period')
+        ->orderByDesc('a.employeeattendanceid')
+        ->get();
+
+
+        return view('HR.payroll_list_nav', compact('payslip'));
     }
 
     public function offsetnav()
     {
+
         $employees = DB::table('employees')
                     ->orderBy('lastname', 'ASC')
                     ->get();
-                    
-                    $empposts = DB::table('emp_posts')
+
+        $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'ASC')
+                    ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
 
@@ -106,7 +162,7 @@ class HomeController extends Controller
                 ->leftjoin('employee_deductions', 'employees.employee_no', '=', 'employee_deductions.employee_no')
                 ->select('emp_final_posts.*','employees.*',
                 'employee_deductions.advance','employee_deductions.charge','employee_deductions.meal','employee_deductions.misc','employee_deductions.uniform','employee_deductions.bond_deposit','employee_deductions.mutual_charge',
-                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
+                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.mutual_share','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
 
                 DB::raw('
                 ROUND(
@@ -176,33 +232,23 @@ class HomeController extends Controller
     --------------------------------------------------------------*/
     public function empplugin()
     {
-        // Assuming your .bat file is located at the specified path
-        /* $batFilePath = 'C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat';
 
-        // Check if the .bat file exists
-        if (file_exists($batFilePath)) {
-            // Execute the .bat file using exec()
-            $output = exec('cmd /Z "'.$batFilePath.'"', $outputArray, $returnCode);
+        $remoteHost = '10.151.5.55';
+        $username = 'Admin'; 
+        $password = 'admin101'; 
 
-            return view('HR.Employee_infos_nav');
-        } else {
-            // Handle case when the .bat file doesn't exist
-            dd('The .bat file does not exist.');
-        }   */
-
-        /* exec("C:\\BWPAYROLL SYSTEM\\PLUGINS\\employee_details.bat");
-        return view('HR.Employee_infos_nav'); */
-
-        $process = new Process(['C:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat']);
-        $process->run();
-
-        // Executes after the command finishes
-        if (!$process->isSuccessful()) {
-            return view('HR.Employee_infos_nav');
+        $ssh = new SSH2($remoteHost);
+        if (!$ssh->login($username, $password)) {
+            return response()->json(['error' => 'Access Denied']);
         }
 
-        // Fetch the output and handle if needed
-        $output = $process->getOutput();
+        $process = new Process(['F:/BWPAYROLL SYSTEM/PLUGINS/employee_details.bat']);
+        $process->run();
+
+        if (!$process->isSuccessful()) {
+            return response()->json(['error' => 'Failed to execute command']);
+        }
+
         return back()->with('success', 'Open Employee Details UI');
     }
 
@@ -210,18 +256,19 @@ class HomeController extends Controller
     public function index()
     {
         $empcount = employees::count();
+        $empcount = $empcount ? ($empcount->empcount ?? $empcount) : '0.00';
 
         $gross = DB::table('emp_final_posts as a')
             ->select(DB::raw("FORMAT(
-            SUM(
-                CAST(a.pay_rate AS FLOAT) * 
-                (CAST(a.days AS FLOAT) - CAST(a.slvl_hrs AS FLOAT) - CAST(a.holiday_hrs AS FLOAT) - CAST(a.offdays AS FLOAT))
-                + CAST(a.slvl_amount AS FLOAT) + CAST(a.offdays_amount AS FLOAT)
-                + CAST(a.ot_amount AS FLOAT) + CAST(a.holiday_amount AS FLOAT) + CAST(a.nightdif_amount AS FLOAT)
-                + CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT)
-                - (CAST(c.sss_loan AS FLOAT) + CAST(c.sss_prem AS FLOAT) + CAST(c.pag_ibig_loan AS FLOAT) + CAST(c.pag_ibig_prem AS FLOAT) + CAST(c.philhealth AS FLOAT))
-                - (CAST(d.advance AS FLOAT) + CAST(d.charge AS FLOAT) + CAST(d.uniform AS FLOAT) + CAST(d.bond_deposit AS FLOAT) + CAST(d.meal AS FLOAT) + CAST(d.misc AS FLOAT) + CAST(d.mutual_charge AS FLOAT))
-                - (CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT))
+                SUM(
+                    CAST(a.pay_rate AS FLOAT) * 
+                    (CAST(a.days AS FLOAT) - CAST(a.slvl_hrs AS FLOAT) - CAST(a.holiday_hrs AS FLOAT) - CAST(a.offdays AS FLOAT))
+                    + CAST(a.slvl_amount AS FLOAT) + CAST(a.offdays_amount AS FLOAT)
+                    + CAST(a.ot_amount AS FLOAT) + CAST(a.holiday_amount AS FLOAT) + CAST(a.nightdif_amount AS FLOAT)
+                    + CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT)
+                    - (CAST(c.sss_loan AS FLOAT) + CAST(c.sss_prem AS FLOAT) + CAST(c.pag_ibig_loan AS FLOAT) + CAST(c.pag_ibig_prem AS FLOAT) + CAST(c.philhealth AS FLOAT))
+                    - (CAST(d.advance AS FLOAT) + CAST(d.charge AS FLOAT) + CAST(d.uniform AS FLOAT) + CAST(d.bond_deposit AS FLOAT) + CAST(d.meal AS FLOAT) + CAST(d.misc AS FLOAT) + CAST(d.mutual_charge AS FLOAT))
+                    - (CAST(a.ctlate_amount AS FLOAT) + CAST(a.late_amount AS FLOAT) + CAST(a.udt_amount AS FLOAT))
                 ),
                 '#,##0.00') AS gross"))
             ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
@@ -237,11 +284,43 @@ class HomeController extends Controller
             ->distinct()
             ->first();
 
-        // Ensure $gross and $overtimePremium are not null before accessing their properties
-        $grossValue = $gross ? $gross->gross : null;
-        $overtimePremiumValue = $overtimePremium ? $overtimePremium->OvertimePremium : null;
+            $mutualshare = DB::table('emp_final_posts as a')
+            ->select(DB::raw('SUM(cast(c.mutual_share as float)) as MutualShare'))
+            ->select(DB::raw("FORMAT(SUM(cast(c.mutual_share as float)), '#,##0.00') as MutualShare"))
+            ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+            ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+            ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+            ->distinct()
+            ->first();
+        
 
-        return view('home', compact('empcount', 'grossValue', 'overtimePremiumValue'));
+            if($overtimePremium != null){
+                $grossValue = $gross ? ($gross->gross ?? '0.00') : '0.00';
+            }else{
+                $grossValue = $gross ? $gross->gross : '0.00';
+            }
+
+            if($overtimePremium != null){
+                $overtimePremiumValue = $overtimePremium ? ($overtimePremium->OvertimePremium ?? '0.00' ) : '0.00';
+            }else{
+                $overtimePremiumValue = $overtimePremium ? $overtimePremium->OvertimePremium : '0.00';
+            }
+
+            /* if($mutualshare != null){
+                $mutualshareValue = $mutualshare->MutualShare;
+            }else{
+                $mutualshareValue = $mutualshare ? $mutualshare->mutualshare : '0.00';
+            } */
+
+            if($mutualshare != null){
+                $mutualshareValue = $mutualshare ? ($mutualshare->mutualshare ?? '0.00' ) : '0.00';
+            }else{
+                $mutualshareValue = $mutualshare ? $mutualshare->mutualshare : '0.00';
+            }
+
+        /* dd($mutualshareValue); */
+
+    return view('home', compact('empcount', 'grossValue', 'overtimePremiumValue', 'mutualshareValue'));
     }
 
     public function saccplugin()
@@ -350,7 +429,6 @@ class HomeController extends Controller
     {
                 $osphs = DB::table('osphs')
                 ->join('employees', 'osphs.employee_no', '=', 'employees.employee_no')
-                /* ->select(DB::raw('CONCAT(employees.firstname, ", ", employees.lastname) as fullname'),'overtimes.*') */
                 ->select('employees.firstname', 'osphs.*')
                 ->orderBy('working_schedule', 'DESC')
                 ->get();
@@ -371,6 +449,18 @@ class HomeController extends Controller
         $datesched = request('datesched');
         $offsetin = request('offsetin');
         $offsetout = request('offsetout');
+
+        $employee_data = DB::table('employees')
+        ->select('employee_no', 'fullname')
+        ->where('employee_no', $employee_name)
+        ->first();
+
+        if($employee_data != null){
+            $employee_no = $employee_data->employee_no; 
+            $fullname = $employee_data->fullname; 
+        }else{
+            return back()->with('error','Please Select employee');
+        }
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -394,11 +484,11 @@ class HomeController extends Controller
 
         if($filter<1){
 
-            if($employeeattendanceid != null && $employee_name != null && $employee_no != null && $datesched != null && $workingsched != null && $timein != null && $timeout != null){
+            if($employeeattendanceid != null && $employee_name != null && $employee_no != null && $datesched != null && $workingsched != null && $offsetin != null && $offsetout != null){
                 $update = new osphs();
                 $update->employeeattendanceid   =   request('employeeattendanceid');
-                $update->employee_no   =   request('employee_no');
-                $update->employee_name   =   $employee_name;
+                $update->employee_no   =   $employee_no;
+                $update->employee_name   =   $fullname;
                 $update->working_schedule   =   request('workingsched');
                 $update->date_sched   =   request('datesched');
                 $update->osphs_in   =   request('offsetin');
@@ -523,143 +613,13 @@ class HomeController extends Controller
 
 
     /*--------------------------------------------------------------
-    # OFFSET - DAYS
-    --------------------------------------------------------------*/ 
-    /*--------------------------------------------------------------
-    # DISPLAY OFFSET RECORDS - DAYS
-    --------------------------------------------------------------*/ 
-    public function offdata(Request $request)
-    {
-                $wos = DB::table('wos')
-                ->join('employees', 'wos.employee_no', '=', 'employees.employee_no')
-                ->select('employees.firstname', 'wos.*')
-                ->orderBy('date_sched', 'DESC')
-                ->get();
-
-                return DataTables::of($wos)
-                ->make(true);
-    }
-
-    /*--------------------------------------------------------------
-    # ADD OFFSET RECORDS - DAYS
-    --------------------------------------------------------------*/ 
-    public function addoffset2(Request $request)
-    {
-        $employeeattendanceid = request('employeeattendanceid');
-        $employee_no = request('employee_no');
-        $employee_name = request('employee_name');
-        $datesched = request('datesched');
-        $worksched = request('worksched');
-        $remarks = request('remarks');
-
-        $getday = Carbon::parse($datesched)->format('d');
-        $getmonth = Carbon::parse($datesched)->format('F');
-        $getyear = Carbon::parse($datesched)->format('Y');
-
-        if((int)$getday < 15){
-            $getperiod = "1st Period";
-        }else{
-            $getperiod = "2nd Period";
-        }
-
-        try{
-
-                $filter = DB::table('wos')  
-                ->where("employee_no", "=", $employee_no)
-                ->where("date_sched", "=", $datesched)
-                ->count();
-
-                if($filter<1){
-
-                    if($employeeattendanceid != null && $employee_name != null && $employee_no != null && $datesched != null && $worksched != null && $timein != null && $timeout != null){
-                        $update = new wos();
-                        $update->employeeattendanceid   =   request('employeeattendanceid');
-                        $update->employee_no   =   request('employee_no');
-                        $update->employee_name   =   $employee_name;
-                        $update->date_sched   =   request('datesched');
-                        $update->working_sched   =   request('worksched');
-                        $update->wos_hrs   =   '9';
-                        $update->remarks   =   request('remarks');
-                        $update->month = $getmonth;
-                        $update->year = $getyear;
-                        $update->period = $getperiod;
-                        $update->save();
-
-                        /* DB::statement($updatesched); */
-
-                        Log::info('Add offset days');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OFFSETHRS', 'Add offset days', getdate())
-                        ";
-                        DB::statement($statuslogs);
-                
-                        $timesum1 = Carbon::parse($request->offsetin)->format('H');
-                        $timesum2 = Carbon::parse($request->offsetout)->format('H');
-                        $offsettotal = (int)$timesum2 - (int)$timesum1;
-
-                        $updateattendance = "
-                        insert into employee_attendance_posts(employeeattendanceid,empcode,employee_name,employee_no, date, day, in1, out2, hours_work, working_hour, minutes_late, udt, udt_hrs, nightdif, offsethrs, period, status) values('$employeeattendanceid','1','$employee_name','$employee_no', '$datesched', 'OFFSET', '00:00', '00:00', '9.0', '8.0','0','-','0.00','0','9','$getperiod','0')
-                        ";
-
-                        DB::statement($updateattendance);
-
-                        Log::info('Add Offset days into amployee_attendance_posts');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OFFSETHRS', 'Add Offset days into amployee_attendance_posts', getdate())
-                        ";
-                        DB::statement($statuslogs);
-
-                        $employees = DB::table('employees')
-                                ->get();
-                
-                        Log::info('OFFSET Added Successfully!');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OFFSETHRS', 'OFFSET Added Successfully!', getdate())
-                        ";
-                        DB::statement($statuslogs);
-
-                        return back()->with('employees', $employees)->with('success','OFFSET Added Successfully!'); 
-
-                        }else{
-
-                        Log::info('Please Fill Out This Form!');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OFFSETHRS', 'Please Fill Out This Form!', getdate())
-                        ";
-                        DB::statement($statuslogs);
-
-                            return back()->with('error','Please Fill Out This Form!');
-                        }
-                
-                }else{
-                    Log::info('Please Fill Out This Form!');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OFFSETHRS', 'Data is already exist!', getdate())
-                        ";
-                        DB::statement($statuslogs);
-
-                    return back()->with('error','Data is already exist!');
-                }
-
-        }catch(\Exception $e){
-            return back()->with('exception', $e->getMessage());
-        }
-    }
-
-
-    /*--------------------------------------------------------------
     # PAYROLL
     --------------------------------------------------------------*/
     /*--------------------------------------------------------------
     # VIEW PAYROLL LIST
     --------------------------------------------------------------*/
 
-    public function payrolllistdata(Request $request)
+    /* public function payrolllistdata(Request $request)
     {
                 $payroll = DB::table('emp_final_posts as a')
                 ->select(
@@ -746,6 +706,79 @@ class HomeController extends Controller
 
                     })
                 ->make(true);
+    } */
+
+
+
+    public function payrolllistdata(Request $request)
+    {
+                $payroll = DB::table('emp_final_posts as a')
+                ->select(
+                    'a.employeeattendanceid',
+                    'a.employee_no',
+                    'a.employee_name',
+                    'a.department',
+                    'a.job_status',
+                    DB::raw("
+                
+                    (
+                        (CAST(a.pay_rate AS FLOAT) * (CAST(a.days AS FLOAT) - (CAST(a.slvl_hrs AS FLOAT) + CAST(a.offdays AS FLOAT) + CAST(a.holiday_hrs AS FLOAT)))) +
+                        CAST(a.ot_amount AS FLOAT) + 
+                        CAST(a.holiday_amount AS FLOAT) + 
+                        CAST(a.nightdif_amount AS FLOAT) + 
+                        CAST(a.offdays_amount AS FLOAT) + 
+                        CAST(a.slvl_amount AS FLOAT) +
+                        CAST(a.late_amount AS FLOAT) + CASE WHEN CAST(a.ctlate_amount AS FLOAT) IS NOT NULL THEN CAST(a.ctlate_amount AS FLOAT) ELSE 0 END + (CAST(a.udt_amount AS FLOAT) * -1)
+                    )
+                
+                    -
+                
+                    (
+                        CAST(a.late_amount AS FLOAT) + CASE WHEN CAST(a.ctlate_amount AS FLOAT) IS NOT NULL THEN CAST(a.ctlate_amount AS FLOAT) ELSE 0 END + (CAST(a.udt_amount AS FLOAT) * -1) +
+                        CASE WHEN CAST(d.advance AS FLOAT) IS NOT NULL THEN CAST(d.advance AS FLOAT) ELSE 0 END + 
+                        CASE WHEN CAST(d.charge AS FLOAT) IS NOT NULL THEN CAST(d.charge AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(d.uniform AS FLOAT) IS NOT NULL THEN CAST(d.uniform AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(d.meal AS FLOAT) IS NOT NULL THEN CAST(d.meal AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(d.misc AS FLOAT) IS NOT NULL THEN CAST(d.misc AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(d.mutual_charge AS FLOAT) IS NOT NULL THEN CAST(d.mutual_charge AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(d.bond_deposit AS FLOAT) IS NOT NULL THEN CAST(d.bond_deposit AS FLOAT) ELSE 0 END +
+                
+                        CASE WHEN CAST(c.sss_loan AS FLOAT) IS NOT NULL THEN CAST(c.sss_loan AS FLOAT) ELSE 0 END + 
+                        CASE WHEN CAST(c.sss_prem AS FLOAT) IS NOT NULL THEN CAST(c.sss_prem AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.pag_ibig_loan AS FLOAT) IS NOT NULL THEN CAST(c.pag_ibig_loan AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.pag_ibig_prem AS FLOAT) IS NOT NULL THEN CAST(c.pag_ibig_prem AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.philhealth AS FLOAT) IS NOT NULL THEN CAST(c.philhealth AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.mutual_loan AS FLOAT) IS NOT NULL THEN CAST(c.mutual_loan AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.mutual_share AS FLOAT) IS NOT NULL THEN CAST(c.mutual_share AS FLOAT) ELSE 0 END +
+                        CASE WHEN CAST(c.unions AS FLOAT) IS NOT NULL THEN CAST(c.unions AS FLOAT) ELSE 0 END 
+                    )
+                        AS 
+                        NETSALARY
+
+                    "),
+                    DB::raw("CASE WHEN CAST(d.bond_deposit AS FLOAT) IS NOT NULL THEN CAST(d.bond_deposit AS FLOAT) ELSE 0 END AS BONDDEPO"),
+                    DB::raw("CASE WHEN CAST(c.mutual_share AS FLOAT) IS NOT NULL THEN CAST(c.mutual_share AS FLOAT) ELSE 0 END AS MUTUALSHARE"),
+                    'a.month',
+                    'a.year',
+                    'a.period'
+                )
+                ->leftJoin('employees as b', 'a.employee_no', '=', 'b.employee_no')
+                ->leftJoin('emp_contris as c', 'a.employee_no', '=', 'c.employee_no')
+                ->leftJoin('emp_deducs as d', 'a.employee_no', '=', 'd.employee_no')
+                
+                ->distinct()
+                ->get();
+
+                return DataTables::of($payroll)
+
+                    ->addColumn('action', function($request){
+                        $btn = ' <a href="view-payroll/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-success btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">article</i></span></a>';
+                        $btn = $btn.' <a href="payslip/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-danger btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">download</i></span></a>';
+                        $btn = $btn.' <a href="send-payslip/'.$request->employee_no.'" data-toggle="tooltip"  data-id="'.$request->employee_no.'" data-original-title="view" class="btn btn-primary btn-sm View"><span class="material-symbols-outlined"><i class="material-icons">send</i></span></a>';
+                    return $btn;
+
+                    })
+                ->make(true);
     }
 
 
@@ -763,7 +796,7 @@ class HomeController extends Controller
                 ->leftjoin('employee_deductions', 'employees.employee_no', '=', 'employee_deductions.employee_no')
                 ->select('emp_final_posts.*','employees.*',
                 'employee_deductions.advance','employee_deductions.charge','employee_deductions.meal','employee_deductions.misc','employee_deductions.uniform','employee_deductions.bond_deposit','employee_deductions.mutual_charge',
-                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
+                'employee_contributions.sss_loan','employee_contributions.pag_ibig_loan','employee_contributions.mutual_loan','employee_contributions.mutual_loan','employee_contributions.mutual_share','employee_contributions.sss_prem','employee_contributions.pag_ibig_prem','employee_contributions.philhealth','employee_contributions.unions',
 
                 DB::raw('
                 ROUND(
