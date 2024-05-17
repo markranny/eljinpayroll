@@ -321,13 +321,23 @@
 
 <script>
 	$('#datetimepicker1').datetimepicker({
-		format: 'HH:mm'
+		format: 'HH:mm',
+    icons: {
+                time: 'fas fa-clock', // Icon for time
+                up: 'fas fa-chevron-up', // Icon for increasing value
+                down: 'fas fa-chevron-down' // Icon for decreasing value
+            }
 	});
 </script>
 
 <script>
 	$('#datetimepicker2').datetimepicker({
-		format: 'HH:mm'
+		format: 'HH:mm',
+    icons: {
+                time: 'fas fa-clock', // Icon for time
+                up: 'fas fa-chevron-up', // Icon for increasing value
+                down: 'fas fa-chevron-down' // Icon for decreasing value
+            }
 	});
 </script>
 

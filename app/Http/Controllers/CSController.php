@@ -148,29 +148,29 @@ class CSController extends Controller
                 ";
                 DB::statement($updateattendance1); */
 
-                DB::table('employee_attendance_posts')->insert([
-                    'employeeattendanceid' => $employeeattendanceid,
-                    'employee_name' =>  $fullname,
-                    'employee_no' => $employee_no,
-                    'date' => $newdatesched,
-                    'day' => 'CHANGEOFF',
-                    'schedin' => '00:00:00.0000000',
-                    'schedout' => '00:00:00.0000000',
-                    'in1' => $timein,
-                    'out2' => $timeout,
-                    'hours_work' => $timetotal,
-                    'working_hour' => '8.0',
-                    'totalhrsneeds' => '0',
-                    'totalhrs' => '9',
-                    'totalhrsearned' => '9',
-                    'ctlate' => '0',
-                    'minutes_late' => '0',
-                    'udt' => '-',
-                    'udt_hrs' => '0',
-                    'nightdif' => '0',
-                    'period' => $getperiod,
-                    'status' => '0'
-                ]);
+                    /* DB::table('employee_attendance_posts')->insert([
+                        'employeeattendanceid' => $employeeattendanceid,
+                        'employee_name' =>  $fullname,
+                        'employee_no' => $employee_no,
+                        'date' => $newdatesched,
+                        'day' => 'CHANGEOFF',
+                        'schedin' => '00:00:00.0000000',
+                        'schedout' => '00:00:00.0000000',
+                        'in1' => $timein,
+                        'out2' => $timeout,
+                        'hours_work' => $timetotal,
+                        'working_hour' => '8.0',
+                        'totalhrsneeds' => '0',
+                        'totalhrs' => '9',
+                        'totalhrsearned' => '9',
+                        'ctlate' => '0',
+                        'minutes_late' => '0',
+                        'udt' => '-',
+                        'udt_hrs' => '0',
+                        'nightdif' => '0',
+                        'period' => $getperiod,
+                        'status' => '0'
+                    ]);
                 
 
                 Log::info('Insert change off sched to employee_attendance_posts table');
@@ -178,35 +178,7 @@ class CSController extends Controller
                 $statuslogs = "
                 INSERT INTO statuslogs (linecode, functions, modifieddate) values ('ChangeOff', 'Insert change off sched to employee_attendance_posts table', getdate())
                 ";
-                DB::statement($statuslogs);
-
-                /* $updateattendance2 = "
-                update employee_schedule_posts set change_sched = '$datesched' where employee_no = '$employee_no' and date_sched = '$datesched'
-                ";
-                DB::statement($updateattendance2); */
-
-                /* DB::table('employee_schedule_posts')
-                ->where('employee_no', $employee_no)
-                ->where('date_sched', $datesched)
-                ->update(['change_sched' => $datesched]);
-
-
-                Log::info('Update employee_schedule_posts table');
-
-                $statuslogs = "
-                INSERT INTO statuslogs (linecode, functions, modifieddate) values ('ChangeOff', 'Update employee_schedule_posts table', getdate())
-                ";
                 DB::statement($statuslogs); */
-
-                /* $updateattendance3 = "
-                update employee_schedule_posts set date_sched = '$newdatesched' where employee_no = '$employee_no' and date_sched = '$datesched'
-                ";
-                DB::statement($updateattendance3); */
-
-                /* DB::table('employee_schedule_posts')
-                ->where('employee_no', $employee_no)
-                ->where('date_sched', $datesched)
-                ->update(['date_sched' => $newdatesched]); */
 
 
                 $employees = DB::table('employees')

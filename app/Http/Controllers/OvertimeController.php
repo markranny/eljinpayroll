@@ -31,15 +31,17 @@ class OvertimeController extends Controller
 
     public function overtimenav()
 {
-    $employees = DB::table('employees')
+        $employees = DB::table('employees')
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
         $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
+                    ->where('status','=','0')
                     ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
+                    
     return view('HR.overtime_nav', compact('employees', 'empposts'));
 }
 

@@ -34,6 +34,7 @@ tr {
     margin-top: -30px !important;
   }
   .table-header{
+    margin-top: -10px !important;
     background: url('../../images/table-header.png');
   }
 
@@ -53,3 +54,7 @@ tr {
   {
     border-bottom: 2px solid rgb(6, 0, 97);
   }
+/* 
+  #iddetector2{
+    display:block;
+  } */

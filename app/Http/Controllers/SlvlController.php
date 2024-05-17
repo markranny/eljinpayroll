@@ -35,6 +35,7 @@ class SlvlController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
+                    ->where('status','=','0')
                     ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();

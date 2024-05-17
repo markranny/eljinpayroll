@@ -36,6 +36,7 @@ class TravelOrderController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
+                    ->where('status','=','0')
                     ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
                     ->get();
@@ -64,6 +65,7 @@ class TravelOrderController extends Controller
     --------------------------------------------------------------*/
     public function addto(Request $request)
     {
+        $obtype = request('obtype');
         $employeeattendanceid = request('employeeattendanceid');
         $employee_name = request('employee_name');
         $datesched = request('datesched');
@@ -129,37 +131,41 @@ class TravelOrderController extends Controller
                         ";
                         DB::statement($updateattendance1); */
 
-                        DB::table('employee_attendance_posts')->insert([
-                            'employeeattendanceid' => $employeeattendanceid,
-                            'employee_name' => $fullname,
-                            'employee_no' => $employee_no,
-                            'date' => $datesched,
-                            'day' => 'OB',
-                            'schedin' => '00:00:00.0000000',
-                            'schedout' => '00:00:00.0000000',
-                            'in1' => '08:00',
-                            'out2' => '17:00',
-                            'hours_work' => '9.00',
-                            'working_hour' => '8.00',
-                            'totalhrsneeds' => '0',
-                            'totalhrs' => '9',
-                            'totalhrsearned' => '9',
-                            'ctlate' => '0',
-                            'nightdif' => '0',
-                            'minutes_late' => '0',
-                            'udt' => '-',
-                            'udt_hrs' => '0',
-                            'ob' => 'OB',
-                            'period' => $getperiod,
-                            'status' => '0'
-                        ]);
+                        if($obtype == "OB"){
+                            DB::table('employee_attendance_posts')->insert([
+                                'employeeattendanceid' => $employeeattendanceid,
+                                'employee_name' => $fullname,
+                                'employee_no' => $employee_no,
+                                'date' => $datesched,
+                                'day' => 'OB',
+                                'schedin' => '00:00:00.0000000',
+                                'schedout' => '00:00:00.0000000',
+                                'in1' => '08:00',
+                                'out2' => '17:00',
+                                'hours_work' => '9.00',
+                                'working_hour' => '8.00',
+                                'totalhrsneeds' => '0',
+                                'totalhrs' => '9',
+                                'totalhrsearned' => '9',
+                                'ctlate' => '0',
+                                'nightdif' => '0',
+                                'minutes_late' => '0',
+                                'udt' => '-',
+                                'udt_hrs' => '0',
+                                'ob' => 'OB',
+                                'period' => $getperiod,
+                                'status' => '0'
+                            ]);
+    
+                            Log::info('Insert OB to employee_attendance_posts table');
+    
+                            $statuslogs = "
+                            INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OB', 'Insert OB to employee_attendance_posts table', getdate())
+                            ";
+                            DB::statement($statuslogs);
+                        }
 
-                        Log::info('Insert OB to employee_attendance_posts table');
-
-                        $statuslogs = "
-                        INSERT INTO statuslogs (linecode, functions, modifieddate) values ('OB', 'Insert OB to employee_attendance_posts table', getdate())
-                        ";
-                        DB::statement($statuslogs);
+                        
 
                         $employees = DB::table('employees')
                                 ->get();

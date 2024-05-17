@@ -350,19 +350,6 @@ class AttendanceController extends Controller
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
                 //LOGS
                 Log::info('Insert employee details into ECR');
 
@@ -473,6 +460,7 @@ class AttendanceController extends Controller
                 ->whereNotNull('in2')
                 ->whereNull('out2')
                 ->whereNull('nextday')
+                ->where('hours_work', '<=', 0)
                 ->update([
                     'out2' => DB::raw('in2'),
                     'in2' => null,
@@ -751,6 +739,7 @@ class AttendanceController extends Controller
                 ->update([
                     'in1' => DB::raw('out1'),
                     'in2' => null,
+                    'hours_work' => DB::raw('(DATEDIFF(MINUTE, out1, out2) / 60.0)'),
                     'remarks' => 'AF/WRONGPUNCH',
                 ]);
 
@@ -784,6 +773,26 @@ class AttendanceController extends Controller
                 'functions' => 'Autofix AF/WRONGPUNCH (8) 2',
                 'modifieddate' => now(),
                 ]);
+
+
+                /*--------------------------------------------------------------
+                # DELETE OUT1 and IN2
+                --------------------------------------------------------------*/
+                /* DB::table('employee_attendance_savestates')
+                ->update([
+                    'out1' => null,
+                    'in2' => null,
+                    'nextday' => null,
+                    'remarks' => 'DELETE OUT1 and IN2',
+                ]);
+
+                //LOGS
+                Log::info('DELETE OUT1 and IN2');
+                DB::table('statuslogs')->insert([
+                'linecode' => 'attendance',
+                'functions' => 'DELETE OUT1 and IN2',
+                'modifieddate' => now(),
+                ]);   */
 
 
                 /*--------------------------------------------------------------

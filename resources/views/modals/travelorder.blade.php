@@ -1,7 +1,7 @@
 <!-- Bootstrap Basic Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg" role="document">
-		<div class="modal-content">
+		<div class="modal-content" id="iddetector">
 			<div class="modal-header">
 				<h3 class="modal-title">OFFICIAL BUSINESS</h3>
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -26,6 +26,16 @@
                 </select>
                 </div>
                 </div><br><br>
+
+                <div class="col-12">
+                    <div class="mb-3">
+                    <select class="form-select" id="obtype" name="obtype">
+                        <option value="" disabled selected>Select an option...</option>
+                        <option value="OB">OB</option>
+                        <option value="TO">TO</option>
+                    </select>
+                    </div>
+                </div>
 
                 <div class="col-6">
                 <div class="form-group">
@@ -70,6 +80,20 @@
                     
 			</div>
 		</div>
+
+        <div class="container modal-sm" id="iddetector2" style="display:none">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="font-weight: bold">TRAVEL ORDER INFO!</h5>
+                </div>
+
+
+                <div class="modal-body">
+                    <h6 style="color:red">Please Create Payroll Code First!</h6>
+                </div>
+		    </div>
+        </div>
+
 	</div>
 </div>
 
@@ -121,3 +145,26 @@
 		</div>
 	</div>
 </div>
+
+<script>
+    function hideButtonIfValueIsNull() {
+        var iddetector = document.getElementById('iddetector');
+        var iddetector2 = document.getElementById('iddetector2');
+        var employeeattendanceidInputs = document.getElementsByName('employeeattendanceid');
+        
+        var hide = true;
+        for (var i = 0; i < employeeattendanceidInputs.length; i++) {
+            if (employeeattendanceidInputs[i].value) {
+                hide = false;
+                break;
+            }
+        }
+
+        if (hide) {
+            iddetector.style.display = 'none';
+            iddetector2.style.display = 'block';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', hideButtonIfValueIsNull);
+</script>

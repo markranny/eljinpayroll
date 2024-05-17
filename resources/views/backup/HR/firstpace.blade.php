@@ -49,6 +49,7 @@
         margin-top: -30px !important;
       }
       .table-header{
+        margin-top: -10px !important;
         background: url('{{URL::asset('/images/table-header.png')}}')
       }
 

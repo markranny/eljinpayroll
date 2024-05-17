@@ -34,6 +34,7 @@ class HolidayController extends Controller
 
                     $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
+                    ->where('status','=','0')
                     ->orderBy('employeeattendanceid', 'ASC')
                     ->limit(1)
                     ->get();
