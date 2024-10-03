@@ -8,9 +8,6 @@ $(function () {
 
     var table = $('#att').DataTable({
         processing: true,
-        language: {
-            processing: '<img width="80" height="80" src="/images/coffee-cup.webp" alt="spinner-frame-5"/>'
-        },
         scrollX: true,
         scrollY: "400px",
         scrollCollapse: true,
@@ -106,66 +103,66 @@ $(function () {
     });
 
     // Edit button click handler
-    $('#att').on('click', '.edit-btn', function() {
-        var empNo = $(this).data('empno');
-        
-        $.ajax({
-            url: '/get-employee/' + empNo,
-            type: 'GET',
-            dataType: 'json', // Expect JSON response
-            success: function(response) {
-                // Populate modal with employee data
-                $('#edit_empno').val(response.EmpNo);
-                $('#edit_lname').val(response.Lname);
-                $('#edit_fname').val(response.Fname);
-                $('#edit_mname').val(response.Mname);
-                $('#edit_suffix').val(response.Suffix);
-                $('#edit_gender').val(response.Gender);
-                $('#edit_educational_attainment').val(response.EducationalAttainment);
-                $('#edit_degree').val(response.Degree);
-                $('#edit_civil_status').val(response.CivilStatus);
-                $('#edit_birthdate').val(response.Birthdate);
-                $('#edit_contact_no').val(response.ContactNo);
-                $('#edit_email').val(response.Email);
-                $('#edit_present_address').val(response.PresentAddress);
-                $('#edit_permanent_address').val(response.PermanentAddress);
-                $('#edit_emergency_contact_name').val(response.EmergencyContactName);
-                $('#edit_emergency_contact').val(response.EmergencyContact);
-                $('#edit_emergency_relationship').val(response.EmergencyRelationship);
-                $('#edit_employee_status').val(response.EmployeeStatus);
-                $('#edit_job_status').val(response.JobStatus);
-                $('#edit_rank_file').val(response.RankFile);
-                $('#edit_department').val(response.Department);
-                $('#edit_line').val(response.Line);
-                $('#edit_job_title').val(response.JobTitle);
-                $('#edit_hired_date').val(response.HiredDate);
-                $('#edit_endcontract').val(response.EndContract);
-                $('#edit_pay_type').val(response.PayType);
-                $('#edit_pay_rate').val(response.PayRate);
-                $('#edit_allowance').val(response.Allowance);
-                $('#edit_costcenter').val(response.CostCenter);
-                $('#edit_sss_no').val(response.SSSNo);
-                $('#edit_philhealth_no').val(response.PhilHealthNo);
-                $('#edit_hdmf_no').val(response.HDMFNo);
-                $('#edit_tax_no').val(response.TaxNo);
-                $('#edit_taxable').val(response.Taxable);
-                
-                // Show the modal
-                $('#editEmployeeModal').modal('show');
-            },
-            error: function(xhr, status, error) {
-                console.error('Error fetching employee data:', status, error);
-                var errorMessage = xhr.responseJSON && xhr.responseJSON.message 
-                    ? xhr.responseJSON.message 
-                    : 'Error fetching employee data. Please try again.';
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: errorMessage
-                });
-            }
-        });
+$('#att').on('click', '.edit-btn', function() {
+    var empNo = $(this).data('empno');
+    
+    $.ajax({
+        url: '/get-employee/' + empNo,
+        type: 'GET',
+        dataType: 'json', // Expect JSON response
+        success: function(response) {
+            // Populate modal with employee data
+            $('#edit_empno').val(response.employee_no);
+            $('#edit_lname').val(response.lastname);
+            $('#edit_fname').val(response.firstname);
+            $('#edit_mname').val(response.middlename);
+            $('#edit_suffix').val(response.suffix);
+            $('#edit_gender').val(response.gender);
+            $('#edit_educational_attainment').val(response.educational_attainment);
+            $('#edit_degree').val(response.degree);
+            $('#edit_civil_status').val(response.civil_status);
+            $('#edit_birthdate').val(response.birthdate);
+            $('#edit_contact_no').val(response.contact_no);
+            $('#edit_email').val(response.email);
+            $('#edit_present_address').val(response.present_address);
+            $('#edit_permanent_address').val(response.permanent_address);
+            $('#edit_emergency_contact_name').val(response.emergency_contact_name);
+            $('#edit_emergency_contact').val(response.emergency_contact);
+            $('#edit_emergency_relationship').val(response.emergency_relationship);
+            $('#edit_employee_status').val(response.employee_status);
+            $('#edit_job_status').val(response.job_status);
+            $('#edit_rank_file').val(response.rank_file);
+            $('#edit_department').val(response.department);
+            $('#edit_line').val(response.line);
+            $('#edit_job_title').val(response.job_title);
+            $('#edit_hired_date').val(response.hired_date);
+            $('#edit_endcontract').val(response.endcontract);
+            $('#edit_pay_type').val(response.pay_type);
+            $('#edit_pay_rate').val(response.pay_rate);
+            $('#edit_allowance').val(response.allowance);
+            $('#edit_costcenter').val(response.costcenter);
+            $('#edit_sss_no').val(response.sss_no);
+            $('#edit_philhealth_no').val(response.philhealth_no);
+            $('#edit_hdmf_no').val(response.hdmf_no);
+            $('#edit_tax_no').val(response.tax_no);
+            $('#edit_taxable').val(response.taxable);
+            
+            // Show the modal
+            $('#editEmployeeModal').modal('show');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error fetching employee data:', status, error);
+            var errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                ? xhr.responseJSON.message 
+                : 'Error fetching employee data. Please try again.';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: errorMessage
+            });
+        }
     });
+});
 
     // Save changes button click handler
     $('#saveEmployeeChanges').click(function() {

@@ -115,6 +115,10 @@ tr {
   margin-top: 20px;
 }
 
+.marginTop5px{
+  margin-top: 5px;
+}
+
 .fixedModal {
   height: 70vh;
   overflow-y: auto;
@@ -129,6 +133,22 @@ tr {
   border-radius: 5px !important;
 }
 
+/* Blur everything except the modal */
+.modal-backdrop.show {
+  backdrop-filter: blur(8px); /* Applies blur to the entire background */
+  -webkit-backdrop-filter: blur(8px); /* Safari support */
+}
+
+/* Ensure modal content remains clear */
+.modal-content {
+  position: relative;
+  z-index: 1055; /* Higher than the backdrop (default modal-backdrop z-index is 1040) */
+  background-color: white;
+  filter: none;
+}
+
+
+
 .modal-header {
   position: sticky;
   top: 0;
@@ -136,4 +156,13 @@ tr {
   background-color: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Constant shadow */
 }
+
+.modal-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1); /* Top shadow */
+}
+
 

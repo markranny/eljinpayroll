@@ -2,7 +2,13 @@
 
 <div class="LayoutTable">
 
-     <div class="card">
+<div class="float-right">
+    <button id="addEmployeeBtn" class="btn btn-sm btn-primary mb-3">
+        <i class="fas fa-plus"></i> Add Employee
+    </button>
+</div>
+
+     <div class="card marginTop5px ">
         <div class="card-body">
             <div class="material-datatables">
                 <table id="att" class="table table-striped table-no-bordered table-hover">
