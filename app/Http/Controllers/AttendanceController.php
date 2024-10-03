@@ -12,6 +12,7 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log; 
 use Carbon\Carbon;
+use App\employees;
 use App\employee_attendances;
 use App\employee_attendance_posts;
 use App\employee_final_attendance_posts;
@@ -20,6 +21,7 @@ use App\employee_attendances_logs;
 use App\employee_attendance_posts_logs;
 use App\employee_final_attendance_posts_logs;
 use App\employees_detail_temps_logs;
+use App\employee_upload_attendances;
 use DataTables;
 use Validator;
 
@@ -59,7 +61,13 @@ class AttendanceController extends Controller
 
     public function importdatanav()
     {
-        return view('HR.Import_Attendance');
+        $employees = DB::table('employees')
+                    ->orderBy('lastname', 'ASC')
+                    ->get();
+
+        /* return view('HR.Import_Attendance'); */
+
+        return view('HR.Import_Attendance', compact('employees'));
     }
 
 
@@ -180,7 +188,27 @@ class AttendanceController extends Controller
 
     public function importdata(Request $request)
     {
-        $employee_upload_attendances = DB::table('employee_upload_attendances')
+                /* $employee_upload_attendances = DB::table('employee_upload_attendances')
+                ->get();
+
+                return DataTables::of($employee_upload_attendances)
+                ->make(true); */
+
+                $employee_upload_attendances = DB::table('employee_upload_attendances as a')
+                ->join('employees as b', 'a.employee_no', '=', 'b.employee_no')
+                ->select(
+                    'b.employee_no',
+                    'b.fullname',
+                    'a.date',
+                    'a.day',
+                    'a.in1',
+                    'a.out1',
+                    'a.in2',
+                    'a.out2',
+                    'a.nextday',
+                    'a.hours_work',
+                    'a.location'
+                )
                 ->get();
 
                 return DataTables::of($employee_upload_attendances)
@@ -199,13 +227,14 @@ class AttendanceController extends Controller
         $count = (int)$importpass;
 
         $file = request('file');
+        $fromdate = request('fromdate');
+        $todate = request('todate');
 
         try{
         if($count < 1)
         {
 
-                $statement = "
-
+                /* $statement = "
                 BULK INSERT dbo.employee_upload_attendances
                 FROM '//Progenx\PAYROLL SYSTEM\Attendance\\".$file."'
                 WITH
@@ -214,7 +243,223 @@ class AttendanceController extends Controller
                 FIELDTERMINATOR = ',', 
                 ROWTERMINATOR = '\n'
                 )
-                ";
+                "; */
+
+
+
+
+                /* $statement = 
+                "
+                WITH DailyLogs AS (
+                    SELECT 
+                        Reference AS EmployeeNo,
+                        CONVERT(DATE, RecordDate) AS Date,
+                        FORMAT(RecordDate, 'dddd') AS Day,
+                        MIN(CASE WHEN Type = 1 THEN FORMAT(ActualTime, 'HH:mm') END) AS In1,
+                        MIN(CASE WHEN Type = 1 THEN ActualTime END) AS InTime,
+                        MAX(CASE WHEN Type = 2 AND ActualTime <= '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) AS LunchOut,
+                        MAX(CASE WHEN Type = 2 AND ActualTime <= '12:00' THEN ActualTime END) AS LunchOutTime,
+                        CASE 
+                            WHEN MIN(CASE WHEN Type = 1 THEN ActualTime END) IS NOT NULL 
+                                 AND MAX(CASE WHEN Type = 2 AND ActualTime <= '12:00' THEN ActualTime END) IS NULL THEN NULL 
+                            ELSE MAX(CASE WHEN Type = 1 AND ActualTime > '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) 
+                        END AS AfternoonIn1,
+                        MAX(CASE WHEN Type = 1 AND ActualTime > '12:00' THEN ActualTime END) AS AfternoonInTime,
+                        MAX(CASE WHEN Type = 2 AND ActualTime > '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) AS Out,
+                        MAX(CASE WHEN Type = 2 AND ActualTime > '12:00' THEN ActualTime END) AS OutTime
+                    FROM [C:\PROGRAMDATA\TOUCHLINK TIME RECORDER 3\TA3.MDF].[dbo].timelogs
+                    WHERE 
+                        RecordDate BETWEEN '".$fromdate."' AND '".$todate."'
+                    GROUP BY 
+                        Reference,
+                        CONVERT(DATE, RecordDate),
+                        FORMAT(RecordDate, 'dddd')
+                ),
+                NextDayLogs AS (
+                    SELECT
+                        t1.EmployeeNo,
+                        t1.Date,
+                        t1.Day,
+                        t1.In1,
+                        t1.LunchOut,
+                        t1.AfternoonIn1,
+                        COALESCE(t1.Out, MAX(FORMAT(t2.ActualTime, 'HH:mm'))) AS Out,
+                        t1.InTime,
+                        t1.LunchOutTime,
+                        t1.AfternoonInTime,
+                        COALESCE(t1.OutTime, MAX(t2.ActualTime)) AS OutTime,
+                        MAX(FORMAT(t2.ActualTime, 'HH:mm')) AS NextDayOut,
+                        DATEDIFF(MINUTE, t1.InTime, COALESCE(t1.OutTime, GETDATE())) / 60.0 AS Hours_Work
+                    FROM DailyLogs t1
+                    LEFT JOIN [C:\PROGRAMDATA\TOUCHLINK TIME RECORDER 3\TA3.MDF].[dbo].timelogs t2 ON t1.EmployeeNo = t2.Reference
+                        AND CONVERT(DATE, t2.RecordDate) = DATEADD(DAY, 1, t1.Date)
+                        AND t2.Type = 2
+                    GROUP BY
+                        t1.EmployeeNo,
+                        t1.Date,
+                        t1.Day,
+                        t1.In1,
+                        t1.LunchOut,
+                        t1.AfternoonIn1,
+                        t1.Out,
+                        t1.InTime,
+                        t1.LunchOutTime,
+                        t1.AfternoonInTime,
+                        t1.OutTime
+                )
+                INSERT INTO employee_upload_attendances (employee_no, date, day, in1, out1, in2, out2, nextday, hours_work, location)
+                SELECT
+                    EmployeeNo,
+                    Date,
+                    Day,
+                    In1,
+                    LunchOut,
+                    AfternoonIn1,
+                    CASE 
+                        WHEN DATEPART(HOUR, CAST(In1 AS TIME)) >= 0 AND DATEPART(HOUR, CAST(In1 AS TIME)) <= 16 THEN Out
+                        ELSE NextDayOut 
+                    END AS Out,
+                    CASE 
+                        WHEN DATEPART(HOUR, CAST(In1 AS TIME)) >= 0 AND DATEPART(HOUR, CAST(In1 AS TIME)) <= 16 THEN NULL
+                        ELSE NextDayOut 
+                    END AS NextDay,
+                    DATEDIFF(MINUTE, 
+                        CAST(CONVERT(VARCHAR, Date, 111) + ' ' + In1 AS DATETIME), 
+                        CASE 
+                            WHEN Out >= In1 THEN CAST(CONVERT(VARCHAR, Date, 111) + ' ' + 
+                                CASE 
+                                    WHEN DATEPART(HOUR, CAST(In1 AS TIME)) >= 0 AND DATEPART(HOUR, CAST(In1 AS TIME)) <= 16 THEN Out
+                                    ELSE NextDayOut 
+                                END AS DATETIME)
+                            ELSE DATEADD(DAY, 1, CAST(CONVERT(VARCHAR, Date, 111) + ' ' + 
+                                CASE 
+                                    WHEN DATEPART(HOUR, CAST(In1 AS TIME)) >= 0 AND DATEPART(HOUR, CAST(In1 AS TIME)) <= 16 THEN Out
+                                    ELSE NextDayOut 
+                                END AS DATETIME))
+                        END
+                    ) / 60.0 AS Hours_Worked,
+                    'MAIN' AS Location
+                FROM NextDayLogs
+                WHERE Hours_Work IS NOT NULL
+                ORDER BY
+                    EmployeeNo,
+                    Date;
+                
+                
+                "; */
+
+
+
+
+
+
+
+
+
+
+
+                $statement = "
+                WITH DailyLogs AS (
+                    SELECT 
+                        EmployeeID AS EmployeeNo,
+                        CONVERT(DATE, ActualTime) AS Date,
+                        FORMAT(ActualTime, 'dddd') AS Day,
+                        MIN(CASE WHEN LogStatus = 1 THEN FORMAT(ActualTime, 'HH:mm') END) AS In1,
+                        MIN(CASE WHEN LogStatus = 1 THEN ActualTime END) AS InTime,
+                        MAX(CASE WHEN LogStatus = 2 AND ActualTime <= '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) AS LunchOut,
+                        MAX(CASE WHEN LogStatus = 2 AND ActualTime <= '12:00' THEN ActualTime END) AS LunchOutTime,
+                        CASE 
+                            WHEN MIN(CASE WHEN LogStatus = 1 THEN ActualTime END) IS NOT NULL 
+                                 AND MAX(CASE WHEN LogStatus = 2 AND ActualTime <= '12:00' THEN ActualTime END) IS NULL THEN NULL 
+                            ELSE MAX(CASE WHEN LogStatus = 1 AND ActualTime > '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) 
+                        END AS AfternoonIn1,
+                        MAX(CASE WHEN LogStatus = 1 AND ActualTime > '12:00' THEN ActualTime END) AS AfternoonInTime,
+                        MAX(CASE WHEN LogStatus = 2 AND ActualTime > '12:00' THEN FORMAT(ActualTime, 'HH:mm') END) AS Out,
+                        MAX(CASE WHEN LogStatus = 2 AND ActualTime > '12:00' THEN ActualTime END) AS OutTime
+                    FROM AttendanceLogs
+                    WHERE 
+                        ActualTime BETWEEN '".$fromdate."' AND '".$todate."'
+                    GROUP BY 
+                        EmployeeID,
+                        CONVERT(DATE, ActualTime),
+                        FORMAT(ActualTime, 'dddd')
+                ),
+                NextDayLogs AS (
+                    SELECT
+                        t1.EmployeeNo,
+                        t1.Date,
+                        t1.Day,
+                        t1.In1,
+                        t1.LunchOut,
+                        t1.AfternoonIn1,
+                        COALESCE(t1.Out, MAX(FORMAT(t2.ActualTime, 'HH:mm'))) AS Out,
+                        t1.InTime,
+                        t1.LunchOutTime,
+                        t1.AfternoonInTime,
+                        COALESCE(t1.OutTime, MAX(t2.ActualTime)) AS OutTime,
+                        MAX(FORMAT(t2.ActualTime, 'HH:mm')) AS NextDayOut,
+                        DATEDIFF(MINUTE, t1.InTime, COALESCE(t1.OutTime, GETDATE())) / 60.0 AS Hours_Work
+                    FROM DailyLogs t1
+                    LEFT JOIN AttendanceLogs t2 ON t1.EmployeeNo = t2.EmployeeID
+                        AND CONVERT(DATE, t2.ActualTime) = DATEADD(DAY, 1, t1.Date)
+                        AND t2.LogStatus = 2
+                    GROUP BY
+                        t1.EmployeeNo,
+                        t1.Date,
+                        t1.Day,
+                        t1.In1,
+                        t1.LunchOut,
+                        t1.AfternoonIn1,
+                        t1.Out,
+                        t1.InTime,
+                        t1.LunchOutTime,
+                        t1.AfternoonInTime,
+                        t1.OutTime
+                )
+                INSERT INTO employee_upload_attendances (employee_no, date, day, in1, out1, in2, out2, nextday, hours_work, location)
+                SELECT
+                    EmployeeNo,
+                    Date,
+                    Day,
+                    In1,
+                    LunchOut,
+                    AfternoonIn1,
+                
+                    CASE WHEN DATEPART(HOUR,In1) >=0 AND DATEPART(HOUR,In1) <=16 THEN Out
+                    else NextDayOut END AS Out,
+                    NULL AS NextDay,
+                
+                    DATEDIFF(MINUTE, 
+                        CAST(CONVERT(VARCHAR, GETDATE(), 111) + ' ' + CONVERT(VARCHAR, In1, 108) AS DATETIME), 
+                        CASE 
+                            WHEN Out >= In1 THEN CAST(CONVERT(VARCHAR, GETDATE(), 111) + ' ' + CONVERT(VARCHAR,
+                            CASE WHEN DATEPART(HOUR,In1) >=0 AND DATEPART(HOUR,In1) <=16 THEN Out
+                            else NextDayOut END
+                            , 108) AS DATETIME)
+                            ELSE DATEADD(DAY, 1, CAST(CONVERT(VARCHAR, GETDATE(), 111) + ' ' + CONVERT(VARCHAR, 
+                            CASE WHEN DATEPART(HOUR,In1) >=0 AND DATEPART(HOUR,In1) <=16 THEN Out
+                            else NextDayOut END
+                            , 108) AS DATETIME))
+                        END
+                    ) / 60.0 AS Hours_Worked,
+                    'MAIN' as Location
+                FROM NextDayLogs
+                where Hours_Work is not null
+                ORDER BY
+                    EmployeeNo,
+                    Date;
+                    ";
+
+
+
+
+
+
+
+
+
+
+
 
 
                 DB::statement($statement);
@@ -314,32 +559,36 @@ class AttendanceController extends Controller
             $importpass1 = DB::table('employee_attendance_savestates')
             ->select(DB::raw("count(*) as attendance"))
             ->count();
+
+            // Count query for employee_attendance_posts
+            $postsCount = DB::table('employee_attendance_posts')
+            ->where('date', '=', $fromdate)
+            ->whereBetween('date', [$fromdate, $todate])
+            ->whereIn('date', function($query) {
+                $query->select('date')
+                    ->from('employee_attendance_posts')
+                    ->groupBy('date')
+                    ->havingRaw('COUNT(*) > 1');
+            })
+            ->count();
+
+            // Count query for employee_attendance_savestates
+            $savestatesCount = DB::table('employee_attendance_savestates')
+            ->where('date', '=', $fromdate)
+            ->whereBetween('date', [$fromdate, $todate])
+            ->whereIn('date', function($query) {
+                $query->select('date')
+                    ->from('employee_attendance_savestates')
+                    ->groupBy('date')
+                    ->havingRaw('COUNT(*) > 1');
+            })
+            ->count();
     
             $count1 = (int)$importpass1;
+            $count2 = (int)$postsCount;
+            $count3 = (int)$savestatesCount;
     
-            if($count1 <= 0){
-
-                /*--------------------------------------------------------------
-                # INSERT DATA TO EMPLOYEE_ATTENDANCE_SAVESTATE
-                --------------------------------------------------------------*/
-               /*  $dataToInsert = DB::table('employee_upload_attendances')
-                    ->select([
-                        'employee_no', 'date', 'day', 'in1', 'out1', 'in2', 'out2', 'nextday', 'hours_work'
-                    ])
-                    ->whereRaw("cast(date as date) between ? and ?", [$fromdate, $todate])
-                    ->get(); */
-
-                /* if (!$dataToInsert->isEmpty()) {
-                    $dataToInsert = $dataToInsert->map(function ($item) {
-                        return (array)$item;
-                    })->toArray();
-
-                    DB::table('employee_attendance_savestates')->insert($dataToInsert);
-                } */
-
-
-
-
+            if($count1 <= 0 && $count2 <= 0 && $count3 <= 0){
 
                   // Assuming you have a query builder instance, such as $queryBuilder
                   $statement = "
@@ -362,27 +611,6 @@ class AttendanceController extends Controller
                     'modifieddate' => now(),
                 ]);
 
-                /* DB::table('employee_attendance_savestates_logs')
-                    ->select('employee_no', 'date', 'day', 'in1', 'out1', 'in2', 'out2', 'nextday', 'hours_work')
-                    ->insertUsing(
-                        ['employee_no', 'date', 'day', 'in1', 'out1', 'in2', 'out2', 'nextday', 'hours_work'],
-                        function ($query) use ($fromdate, $todate) {
-                            $query->select('employee_no', 'date', 'day', 'in1', 'out1', 'in2', 'out2', 'nextday', 'hours_work')
-                                ->from('employee_upload_attendances')
-                                ->whereBetween(DB::raw('CAST(date AS DATE)'), [$fromdate, $todate]);
-                        }
-                    );
-                
-                //LOGS
-                Log::info('Insert employee details into ECR logs');
-
-                $statuslogs = "
-                INSERT INTO statuslogs (linecode, functions, modifieddate) values ('attendance', 'Insert employee details into ECR logs', getdate())
-                ";
-                DB::statement($statuslogs); */
-
-
-    
                 /*--------------------------------------------------------------
                 # Delete records from 'employee_upload_attendances' table
                 --------------------------------------------------------------*/
@@ -400,460 +628,6 @@ class AttendanceController extends Controller
                 ]);
 
     
-                /*--------------------------------------------------------------
-                # AUTOFIX 1: AF/NIGHTSHIFT
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNotNull('nextday')
-                ->whereRaw("CAST(DATEPART(hour, CAST(in1 AS time)) AS int) > 19")
-                ->update([
-                    'out2' => DB::raw('nextday'),
-                    'nextday' => null,
-                    'remarks' => 'AF/NIGHTSHIFT',
-                ]);
-
-                //LOGS
-                Log::info('Filter Night Shift');
-
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Filter Night Shift',
-                'modifieddate' => now(),
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNotNull('nextday')
-                ->whereRaw("CAST(DATEPART(hour, CAST(in1 AS time)) AS int) > 19")
-                ->update([
-                    'out2' => DB::raw('nextday'),
-                    'nextday' => null,
-                    'remarks' => 'AF/NIGHTSHIFT',
-                ]);
-
-                //LOGS
-                Log::info('Filter Night Shift 2');
-
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Filter Night Shift 2',
-                'modifieddate' => now(),
-                ]);
-
-
-                /*--------------------------------------------------------------
-                # AUTOFIX 2: AF/WRONGPUNCH
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNotNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->where('hours_work', '<=', 0)
-                ->update([
-                    'out2' => DB::raw('in2'),
-                    'in2' => null,
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix Wrong Punch');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix Wrong Punch',
-                'modifieddate' => now(), 
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNotNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->update([
-                    'out2' => DB::raw('in2'),
-                    'in2' => null,
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix Wrong Punch 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix Wrong Punch 2',
-                'modifieddate' => now(), 
-                ]);
-
-    
-                /*--------------------------------------------------------------
-                # AUTOFIX 3: AF/HALFDAY
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNotNull('in1')
-                ->whereNotNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->whereRaw("CAST(hours_work AS float) > 0")
-                ->update([
-                    'out2' => DB::raw('out1'),
-                    'out1' => null,
-                    'remarks' => 'AF/HALFDAY',
-                ]);
-
-                // LOGS
-                Log::info('Autofix AF/HALFDAY');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/HALFDAY',
-                'modifieddate' => now(), 
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNotNull('in1')
-                ->whereNotNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->whereRaw("CAST(hours_work AS float) > 0")
-                ->update([
-                    'out2' => DB::raw('out1'),
-                    'out1' => null,
-                    'remarks' => 'AF/HALFDAY',
-                ]);
-
-                //LOGS
-                Log::info('Autofix AF/HALFDAY 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/HALFDAY 2',
-                'modifieddate' => now(),
-                ]);
-    
-                
-                
-                /*--------------------------------------------------------------
-                # AUTOFIX 4: Filter no working hours
-                --------------------------------------------------------------*/
-                /* DB::table('employee_attendance_savestates')
-                ->whereNull('hours_work')
-                ->orWhere('hours_work', 0)
-                ->orWhere('hours_work', '0.00')
-                ->update([
-                    'hours_work' => DB::raw('DATEPART(hour, CAST(out2 AS time)) - DATEPART(hour, CAST(in1 AS time))'),
-                ]); */
-
-                // LOGS
-                /* Log::info('Filter no working hours');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Filter no working hours',
-                'modifieddate' => now(),
-                ]); */
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                /* DB::table('employee_attendance_savestates_logs')
-                ->whereNull('hours_work')
-                ->orWhere('hours_work', 0)
-                ->orWhere('hours_work', '0.00')
-                ->update([
-                    'hours_work' => DB::raw('DATEPART(hour, CAST(out2 AS time)) - DATEPART(hour, CAST(in1 AS time))'),
-                ]); */
-
-                //LOGS
-                /* Log::info('Filter no working hours 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Filter no working hours 2',
-                'modifieddate' => now(),
-                ]); */
-
-
-
-                /*--------------------------------------------------------------
-                # AUTOFIX 5: AF/NEXTDAY
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNotNull('nextday')
-                ->whereRaw("CAST(DATEPART(hour, CAST(in1 AS time)) AS int) < 20")
-                ->update([
-                    'out2' => DB::raw('nextday'),
-                    'nextday' => null,
-                    'remarks' => 'AF/NEXTDAY',
-                ]);
-
-                //LOGS
-                Log::info('Autofix Wrong Punch (NEXTDAY)');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix Wrong Punch (NEXTDAY)',
-                'modifieddate' => now(),
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNull('in2')
-                ->whereNull('out2')
-                ->whereNotNull('nextday')
-                ->whereRaw("CAST(DATEPART(hour, CAST(in1 AS time)) AS int) < 20")
-                ->update([
-                    'out2' => DB::raw('nextday'),
-                    'nextday' => null,
-                    'remarks' => 'AF/NEXTDAY',
-                ]);
-
-                //LOGS
-                Log::info('Autofix Wrong Punch (NEXTDAY) 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix Wrong Punch (NEXTDAY) 2',
-                'modifieddate' => now(),
-                ]);
-
-                
-                /*--------------------------------------------------------------
-                # AUTOFIX 6: Delete instances with no time in and time out
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNull('in1')
-                ->whereNull('in2')
-                ->whereNull('out1')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->delete();
-
-                //LOGS
-                Log::info('Delete instances with no time in and time out.');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Delete instances with no time in and time out.',
-                'modifieddate' => now(),
-                ]);
-                
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNull('in1')
-                ->whereNull('in2')
-                ->whereNull('out1')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->delete();
-
-                //LOGS
-                Log::info('Delete instances with no time in and time out. 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Delete instances with no time in and time out. 2',
-                'modifieddate' => now(),
-                ]);               
-
-
-                
-                /*--------------------------------------------------------------
-                # AUTOFIX 7: AF/WRONGPUNCH
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNotNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->update([
-                    'out2' => DB::raw('in2'),
-                    'in2' => null,
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix AF/WRONGPUNCH (7)');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/WRONGPUNCH (7)',
-                'modifieddate' => now(),
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNotNull('in1')
-                ->whereNull('out1')
-                ->whereNotNull('in2')
-                ->whereNull('out2')
-                ->whereNull('nextday')
-                ->update([
-                    'out2' => DB::raw('in2'),
-                    'in2' => null,
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix AF/WRONGPUNCH (7) 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/WRONGPUNCH (7) 2',
-                'modifieddate' => now(),
-                ]);
-
-
-                
-                /*--------------------------------------------------------------
-                # AUTOFIX 8: AF/WRONGPUNCH
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates')
-                ->whereNull('in1')
-                ->whereNotNull('out1')
-                ->whereNull('in2')
-                ->whereNotNull('out2')
-                ->whereNull('nextday')
-                ->update([
-                    'in1' => DB::raw('out1'),
-                    'in2' => null,
-                    'hours_work' => DB::raw('(DATEDIFF(MINUTE, out1, out2) / 60.0)'),
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix AF/WRONGPUNCH (8)');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/WRONGPUNCH (8)',
-                'modifieddate' => now(),
-                ]);
-
-                /*--------------------------------------------------------------
-                # Update 'employee_attendance_savestates_logs' table
-                --------------------------------------------------------------*/
-                DB::table('employee_attendance_savestates_logs')
-                ->whereNull('in1')
-                ->whereNotNull('out1')
-                ->whereNull('in2')
-                ->whereNotNull('out2')
-                ->whereNull('nextday')
-                ->update([
-                    'in1' => DB::raw('out1'),
-                    'in2' => null,
-                    'remarks' => 'AF/WRONGPUNCH',
-                ]);
-
-                //LOGS
-                Log::info('Autofix AF/WRONGPUNCH (8) 2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'Autofix AF/WRONGPUNCH (8) 2',
-                'modifieddate' => now(),
-                ]);
-
-
-                /*--------------------------------------------------------------
-                # DELETE OUT1 and IN2
-                --------------------------------------------------------------*/
-                /* DB::table('employee_attendance_savestates')
-                ->update([
-                    'out1' => null,
-                    'in2' => null,
-                    'nextday' => null,
-                    'remarks' => 'DELETE OUT1 and IN2',
-                ]);
-
-                //LOGS
-                Log::info('DELETE OUT1 and IN2');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'DELETE OUT1 and IN2',
-                'modifieddate' => now(),
-                ]);   */
-
-
-                /*--------------------------------------------------------------
-                # GET SCHEDULE AND IMPORT TO EMPLOYEE ATTENDANCE POST
-                --------------------------------------------------------------*/
-                /* DB::table('employee_attendance_posts as a')
-                ->leftJoin('employee_schedule_posts as b', function ($join) {
-                    $join->on('a.employee_no', '=', 'b.employee_no')
-                        ->on('a.date', '=', 'b.date_sched');
-                })
-                ->where('a.in1', '!=', '00:00:00.0000000')
-                ->where('a.out2', '!=', '00:00:00.0000000')
-                ->update([
-                    'a.schedin' => DB::raw('b.time_sched'),
-                    'a.schedout' => DB::raw('b.time_sched_out'),
-                ]); */
-
-                /* $update1 = "
-                UPDATE a
-                SET
-                a.schedin = b.time_sched,
-                a.schedout = b.time_sched_out
-                FROM employee_attendance_posts a
-                left JOIN
-                employee_schedule_posts b
-                on a.employee_no = b.employee_no
-                and a.date = b.date_sched where a.in1 != '00:00:00.0000000' and a.out2 != '00:00:00.0000000'
-                ";
-                DB::statement($update1);
-
-                //LOGS
-                Log::info('GET SCHEDULE AND IMPORT TO EMPLOYEE ATTENDANCE POST');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'GET SCHEDULE AND IMPORT TO EMPLOYEE ATTENDANCE POST',
-                'modifieddate' => now(),
-                ]); */
-
-                /*--------------------------------------------------------------
-                # GET CTLATE
-                --------------------------------------------------------------*/
-                /* DB::table('employee_attendance_posts')
-                ->update([
-                    'ctlate' => DB::raw("CASE WHEN schedin != '' THEN CAST(DATEPART(HOUR, in1) AS FLOAT) - CAST(DATEPART(HOUR, schedin) AS FLOAT) ELSE '0' END"),
-                ]); */
-
-                /* $update2 = "
-                update employee_attendance_posts set 
-                ctlate = case when schedin != '' then cast(datepart(HOUR, in1) as float) - cast(datepart(HOUR, schedin) as float)
-                else '0' end
-                ";
-                DB::statement($update2);
-
-                //LOGS
-                Log::info('GET CTLATE');
-                DB::table('statuslogs')->insert([
-                'linecode' => 'attendance',
-                'functions' => 'GET CTLATE',
-                'modifieddate' => now(),
-                ]); */
-
                 /*--------------------------------------------------------------
                 # TOTAL RECORDS
                 --------------------------------------------------------------*/
@@ -902,5 +676,80 @@ class AttendanceController extends Controller
             return back()->with('exception', $e->getMessage());
         }
 
+    }
+
+
+    /*--------------------------------------------------------------
+    # POST EMPLOYEE ATTENDANCE
+    --------------------------------------------------------------*/ 
+
+    public function Amanual(Request $request)
+    {
+        try{
+            $employee_name = request('employee_name');
+            $datesched = request('datesched');
+            $timein = request('timein');
+            $timeout = request('timeout');
+
+            
+
+            $employee_data = DB::table('employees')
+            ->select('employee_no', 'fullname')
+            ->where('employee_no', $employee_name)
+            ->first();
+
+            $date = Carbon::parse($datesched);
+
+            $dayOfWeek = $date->format('l');
+
+            // Convert in1 and out2 to Carbon instances
+            $in1_time = Carbon::parse($timein);
+            $out2_time = Carbon::parse($timeout);
+
+            // Calculate the difference in hours
+            $hours_work = $in1_time->diffInHours($out2_time);
+
+            
+
+            if($employee_data != null){
+                $employee_no = $employee_data->employee_no; 
+                $fullname = $employee_data->fullname; 
+            }else{
+                return back()->with('error','Please Select employee');
+            }
+
+            DB::table('employee_upload_attendances')->insert([
+                [
+                    'employee_no' => $employee_no,
+                    'date' => $datesched,
+                    'day' => $dayOfWeek,
+                    'in1' => $timein,
+                    'out2' => $timeout,
+                    'hours_work' => $hours_work,
+                    'location' => 'MAIN'
+                ]
+            ]);
+
+            /* LOGS */
+            Log::info('Add Employee Attendance Manually');
+    
+            $statuslogs = "
+            INSERT INTO statuslogs (linecode, functions, modifieddate) values ('attendance', 'Add Employee Attendance Manually', getdate())
+            ";
+            DB::statement($statuslogs);
+    
+    
+            }catch(\Exception $e){
+    
+                //LOGS
+                Log::info($e);
+    
+                $statuslogs = "
+                INSERT INTO statuslogs (linecode, functions, modifieddate) values ('attendance', 'DATA ERROR', getdate())
+                ";
+                DB::statement($statuslogs);
+    
+            return back()->with('exception', $e->getMessage());
+        }
     }
 }

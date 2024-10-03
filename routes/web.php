@@ -42,6 +42,8 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+/* Route::get('ZKTeco', 'ZKTecoController@index')->name('connect'); */
+
 //for deleted
 Route::get('Fix', 'HomeController@fixed')->name('fixed');
 Route::post('fltr-attendance-report', 'HomeController@fltrattreportnav')->name('fltrattreportnav');
@@ -86,6 +88,9 @@ Route::post('add-rankfile', 'EmployeesController@addrankfile')->name('addrankfil
 Route::get('/delete/rankfile/{id}', 'EmployeesController@delete_rankfile')->name('delete_rankfile')->middleware('is_hr');
 Route::post('/update/rankfile/', 'EmployeesController@update_rankfile')->name('update_rankfile')->middleware('is_hr');
 
+Route::get('/get-employee/{employee_no}', 'EmployeesController@getEmployee')->name('show-employees')->middleware('is_hr');
+Route::post('/update-employee', 'EmployeesController@updateEmployee')->name('update-employee')->middleware('is_hr');
+
 /*--------------------------------------------------------------
     # SCHEDULE
 --------------------------------------------------------------*/
@@ -123,6 +128,7 @@ Route::post('upload-attendance', 'AttendanceController@importA')->name('importA'
 Route::get('fix-attendance', 'AttendanceController@fixedA')->name('fixedA')->middleware('is_hr');
 Route::get('clear-attendance', 'AttendanceController@clearA')->name('clearA')->middleware('is_hr');
 Route::post('post-attendance', 'AttendanceController@palA')->name('palA')->middleware('is_hr');
+Route::post('add-manual-attendance', 'AttendanceController@Amanual')->name('Amanual')->middleware('is_hr');
 Route::get('autofix', 'AttendanceController@autofix')->name('autofix')->middleware('is_hr');
 
 /*--------------------------------------------------------------

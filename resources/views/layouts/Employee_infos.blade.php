@@ -1,19 +1,6 @@
 
 
 <div class="LayoutTable">
-<div class="card table-header">
-        <div class="card-body">
-            <!-- Employee's List -->
-            <div class="float-right">
-                <div class="row">
-                <div class="col-2">
-                        <!-- <a class="btn btn-primary btn-sm" href="{{ route('empplugin') }}">Employee Details Plugin</a> -->
-                        <a class="btn btn-primary btn-sm" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">Employee Details Plugin</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
      <div class="card">
         <div class="card-body">
@@ -21,6 +8,7 @@
                 <table id="att" class="table table-striped table-no-bordered table-hover">
                     <thead>
                         <tr>
+                        <th style="width: 100px !important;">Actions</th>
                         <th style="width: 200px !important;">EmpNo</th>
                         <th style="width: 200px !important;">Lname</th>
                         <th style="width: 200px !important;">Fname</th>
@@ -66,6 +54,8 @@
     </div>
 </div>
 </div>
+
+@include('modals.employees')
         
 <script type="text/javascript" src="{{asset('js/functions/employee_infos.js')}}">
 </script>

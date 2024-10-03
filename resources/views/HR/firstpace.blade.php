@@ -8,12 +8,13 @@
 <head>
 
   <meta charset="utf-8" />
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
 
     <title>
-      BW PAYROLL SYSTEM - EMPLOYEESINFO
+      BW PAYROLL SYSTEM 
     </title>
 
   <meta content='width=device-width, initial-scale=1.0, shrink-to-fit=no' name='viewport' />
@@ -140,14 +141,12 @@
                     <span class="sidebar-normal"> Set Holidays (HR) </span>
                   </a>
                 </li>
-                <li class="nav-item ">
-                  <!-- <a class="nav-link" href="{{ route('attreport') }}"> -->
-                  <!-- <a class="nav-link" href="{{ route('attendancepostsplugin') }}"> -->
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                     <span class="sidebar-mini"> EC </span>
                     <span class="sidebar-normal"> DRAFT </span>
                   </a>
-                </li>
+                </li> -->
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('importdatanav') }}">
                     <span class="sidebar-mini"> ID </span>
@@ -268,7 +267,8 @@
                 <li class="nav-item ">
                   <a class="nav-link" href="{{ route('retronav') }}">
                     <i class="material-icons">R</i>
-                    <p> Retro <div style="color:red">(Developer Mode)</div></p>
+                    <p> Retro </p>
+                    <!-- <p> Retro <div style="color:red">(Developer Mode)</div></p> -->
                   </a>
                 </li>
               </ul>
@@ -320,13 +320,12 @@
             </a>
             <div class="collapse" id="reports123">
               <ul class="nav">
-              <li class="nav-item ">
-                <!-- <a class="nav-link" href="{{ route('benefits') }}"> -->
+              <!-- <li class="nav-item ">
                 <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                   <i class="material-icons">medical_information</i>
                   <p> Contribution </p>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('contributionlists') }}">
                   <i class="material-icons">medical_information</i>
@@ -348,13 +347,12 @@
             </a>
             <div class="collapse" id="reports101">
               <ul class="nav">
-              <li class="nav-item ">
-                <!-- <a class="nav-link" href="{{ route('deductions') }}"> -->
+              <!-- <li class="nav-item ">
                 <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
                   <i class="material-icons">trending_down</i>
                   <p> Deductions </p>
                 </a>
-              </li>
+              </li> -->
               <li class="nav-item ">
                 <a class="nav-link" href="{{ route('deductionlists') }}">
                   <i class="material-icons">trending_down</i>
@@ -364,7 +362,14 @@
               </ul>
             </div>
           </li> 
-          @endif  
+          @endif 
+          
+          <li class="nav-item ">
+            <a class="nav-link" href="http://10.151.5.55:5555/virtual/wflogin.html?l=0" target="_blank">
+              <i class="material-icons">extension</i>
+              <p> Plugins </p>
+            </a>
+          </li>
 
           @if (Auth::user()->role == 'FINANCE' || Auth::user()->role == 'ADMIN')
           <li class="nav-item ">

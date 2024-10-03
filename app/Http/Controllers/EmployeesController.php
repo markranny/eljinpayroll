@@ -118,6 +118,36 @@ class EmployeesController extends Controller
                 ->make(true);
     }
 
+    /*--------------------------------------------------------------
+    # UPDATE EMPLOYEE INFO. 
+    --------------------------------------------------------------*/
+
+    public function getEmployee($employee_no)
+    {
+        /* $empNo = "2030"; */
+        $employee = Employees::where('employee_no', $employee_no)->first();
+        if (!$employee) {
+            return response()->json(['error' => 'Employee not found'], 404);
+        }
+        return response()->json($employee);
+    }
+
+    public function updateEmployee(Request $request)
+    {
+        try {
+            $employee = Employees::where('employee_no', $request->input('employee_no'))->first();
+            
+            if (!$employee) {
+                return response()->json(['error' => 'Employee not found'], 404);
+            }
+
+            $employee->update($request->all());
+            return response()->json(['success' => true, 'message' => 'Employee updated successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to update employee: ' . $e->getMessage()], 500);
+        }
+    }
+
 
     /*--------------------------------------------------------------
     # DISPLAY UPLOADED EMPLOYEE INFO. 

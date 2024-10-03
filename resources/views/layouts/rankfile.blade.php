@@ -1,12 +1,11 @@
 
 
-<div class="card">
+<div class="card table-header">
         <div class="card-body">
-            RANK FILE LISTS
             <div class="float-right">
                 <div class="row">
                 <div class="col-2">
-                        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#exampleModal">ADD RANKFILE</button>
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#exampleModal">ADD RANKFILE</button>
 
                     </div>
                 </div>
@@ -162,7 +161,7 @@ function loadData() {
 
     serverSide: true,
 
-    dom: 'Bfrtp',
+    dom: 'lBfrtp',
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 

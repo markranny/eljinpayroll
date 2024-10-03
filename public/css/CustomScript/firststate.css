@@ -15,11 +15,11 @@
       color: #ffff;
       font-family:"Calibri", sans-serif;
       font-weight: 900;
-      font-size: 12px;
+      font-size: 18px;
   }
 tr {
   font-family:"Calibri", sans-serif;
-  font-size: 12px;
+  font-size: 18px;
   }
     .msg-container{
     position:absolute;
@@ -33,9 +33,12 @@ tr {
   .LayoutTable{
     margin-top: -30px !important;
   }
+  .marginTop10px{
+    margin-top: -20px !important;
+  }
   .table-header{
     margin-top: -10px !important;
-    background: url('../../images/table-header.png');
+    /* background: url('../../images/table-header.png'); */
   }
 
   .table-footer{
@@ -54,7 +57,83 @@ tr {
   {
     border-bottom: 2px solid rgb(6, 0, 97);
   }
-/* 
-  #iddetector2{
-    display:block;
-  } */
+
+  .resize-table{
+    height: 80vh;
+  }
+
+  .msg-container{
+    z-index: 99999;
+  }
+
+  /* Base styles */
+.form-outline {
+  position: relative;
+  margin-bottom: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 10px 10px 0;
+  border: none;
+  border-bottom: 2px solid #ccc;
+  outline: none;
+  font-size: 16px;
+  background: none;
+  transition: border-color 0.3s ease;
+}
+
+.form-label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  font-size: 16px;
+  color: #aaa;
+  pointer-events: none;
+  transition: 0.2s ease all;
+}
+
+/* Focus state: underline and label float */
+.form-input:focus {
+  border-bottom: 2px solid #3f51b5;
+}
+
+.form-input:focus + .form-label,
+.form-input:not(:placeholder-shown) + .form-label {
+  top: -20px;
+  font-size: 14px;
+  color: #3f51b5;
+}
+
+/* Underline hover effect */
+.form-input:hover {
+  border-bottom: 2px solid #757575;
+}
+
+.editMargin20px{
+  margin-top: 20px;
+}
+
+.fixedModal {
+  height: 70vh;
+  overflow-y: auto;
+}
+
+.highlightstxt{
+  background-color: rgb(9, 0, 141);
+  color: white !important;
+  font-size: larger !important;
+  margin-bottom: 30px !important;
+  padding: 8px !important;
+  border-radius: 5px !important;
+}
+
+.modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Constant shadow */
+}
+

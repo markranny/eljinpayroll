@@ -1,8 +1,8 @@
 
 
-    <div class="card table-header">
+   <!--  <div class="card table-header">
         <div class="card-body">
-            <!-- ATTENDANCE -->
+            ATTENDANCE
             <div class="float-right">
                 <div class="row">
                 <div class="col-2">
@@ -11,7 +11,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
 
 
      <div class="card">
