@@ -24,6 +24,9 @@ function loadData() {
 
     dom: 'lBfrtp',
 
+    scrollX: true,
+    scrollY: "55vh",
+
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],
 
     ajax: "travel-order-list",
@@ -52,13 +55,6 @@ function loadData() {
                 name: 'id',
                 orderable: false,
                 searchable: false,
-                /* render: function (data, type, full, meta) {
-                    return `
-                    <button class="btn btn-sm btn-primary" onclick="setUpdateForm(${data}, '${full.employee_no}', '${full.firstname}', '${full.date_sched}', '${full.location}', '${full.remarks}')" data-toggle="modal" data-target="#updateModal" >EDIT</button>
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.date_sched}')">DELETE</button>    
-                    `;
-                } */
-
                 render: function (data, type, full, meta) {
                     return `
                     <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data}, '${full.employee_no}', '${full.date_sched}')">DELETE</button>    
@@ -72,10 +68,14 @@ function loadData() {
 }
 
 
-function setDeleteButton(id, employee_no, date_sched){
+function setDeleteButton(id, employee_no, date_sched) {
+    // Make sure the date is properly formatted
+    const formattedDate = moment(date_sched).format('YYYY-MM-DD');
+    
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteTravelOrder(${id}, '${employee_no}', '${date_sched}')">Delete</button>   
-    <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+        <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" 
+            onclick="deleteTravelOrder('${id}', '${employee_no}', '${formattedDate}')">Delete</button>   
+        <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
     `);
 }
 
@@ -167,38 +167,52 @@ $(document).ready(function() {
         });
 });
 
-function deleteTravelOrder(id, employee_no, datesched){
+function deleteTravelOrder(id, employee_no, date_sched) {
+    // Show loading state
+    $("#message").html(`
+        <div class="alert alert-info alert-dismissible">
+            Processing...
+        </div>
+    `);
+
     $.ajax({
-            url: "/delete/travel_order/"+id+'/'+employee_no+'/'+datesched, 
-            type: "GET",
-            dataType: "json",
-            success: function(response) {
-                if (response.message == 'success') {
-                    $("#message").html(`<div class="alert alert-success alert-dismissible" id="disappearingAlert">
-                    Deletion success
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>`);
-                    $(loadData);
-                } else {
-                    $("#message").html(`<div class="alert alert-danger alert-dismissible" id="disappearingAlert">
-                    Deletion failed
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>`);
-                }
-            },
-            error: function() {
-                $("#message").html(`<div class="alert alert-danger alert-dismissible" id="disappearingAlert">
-                    There is an unexpected error. Please try again later.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>`);
+        url: `/delete/travelorder/${id}/${employee_no}/${date_sched}`,
+        type: "GET",
+        dataType: "json",
+        success: function(response) {
+            if (response.message === 'success') {
+                $("#message").html(`
+                    <div class="alert alert-success alert-dismissible" id="disappearingAlert">
+                        Deletion successful
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `);
+                loadData(); // Remove the jQuery wrapper
+            } else {
+                $("#message").html(`
+                    <div class="alert alert-danger alert-dismissible" id="disappearingAlert">
+                        Deletion failed: ${response.reason || 'Unknown error'}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `);
             }
-        });
+        },
+        error: function(xhr) {
+            console.error('Delete error:', xhr.responseText);
+            $("#message").html(`
+                <div class="alert alert-danger alert-dismissible" id="disappearingAlert">
+                    ${xhr.responseJSON?.error || 'An unexpected error occurred. Please try again.'}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            `);
+        }
+    });
 }
 
 $(loadData);

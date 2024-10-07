@@ -62,28 +62,6 @@
 	</div>
 </div>
 
-<!-- <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-	<div class="modal-dialog modal-md" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<span class="modal-title font-weight-bold">INFO</span>
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-			</div>
-
-
-			<div class="modal-body">
-                Please Contact IT/Support!!!
-			</div>
-
-
-			<div class="modal-footer" id="delete-footer">
-			</div>
-		</div>
-	</div>
-</div> -->
-
 
 <!-- Bootstrap Basic Modal -->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -128,11 +106,6 @@
                 </div>
                 </div>
 
-                <!-- <div class="col-6">
-                <div class="form-group">
-                    <input type="text" name="timein" id="datetimepicker1" class="form-control datepicker" placeholder=" Insert OT (IN)"><br>
-                </div>
-                </div> -->
 
                 <div class="col-6">
                 <div class="form-group">
@@ -143,12 +116,6 @@
                     <br>
                 </div>
                 </div>
-
-                <!-- <div class="col-6">
-                <div class="form-group">
-                    <input type="text" name="timeout" id="datetimepicker2" class="form-control datepicker" placeholder="Insert OT (OUT)">
-                </div>
-                </div> -->
 
                 <div class="col-6">
                 <div class="form-group">
@@ -179,20 +146,6 @@
                     
 			</div>
 		</div>
-
-        <div class="container modal-sm" id="iddetector2" style="display:none">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" style="font-weight: bold">CHANGE RESTDAY INFO!</h5>
-                </div>
-
-
-                <div class="modal-body">
-                    <h6 style="color:red">Please Create Payroll Code First!</h6>
-                </div>
-		    </div>
-        </div>
-        
 	</div>
 </div>
 

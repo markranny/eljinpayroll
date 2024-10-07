@@ -19,6 +19,8 @@ function loadData() {
     language: {
         processing: '<img width="80" height="80" src="/images/coffee-cup.webp" alt="spinner-frame-5"/>',
         },
+        scrollX: true,
+        scrollY: "55vh",
 
     serverSide: true,
 
@@ -93,8 +95,8 @@ function loadData() {
 
 function setDeleteButton(id, employee_no, working_schedule){
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteOvertime(${id}, '${employee_no}', '${working_schedule}')">Delete</button>   
-    <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
+    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteOvertime(${id}, '${employee_no}', '${working_schedule}')" style="margin-top:10px;margin-right:10px;">Delete</button>   
+    <button class="btn btn-primary btn-sm" data-dismiss="modal" style="margin-top:10px;">Cancel</button>
     `);
 }
 

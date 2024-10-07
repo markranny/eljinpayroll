@@ -34,14 +34,13 @@ class TravelOrderController extends Controller
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
-                    $empposts = DB::table('emp_posts')
+                    $record = DB::table('numbersequences')
                     ->select('employeeattendanceid')
-                    ->where('status','=','0')
-                    ->orderBy('employeeattendanceid', 'DESC')
-                    ->limit(1)
-                    ->get();
+                    ->first();
+      
+              $emppost = $record ? str_pad($record->employeeattendanceid, 10, '0', STR_PAD_LEFT) : '0000000000';
 
-        return view('HR.to_nav', compact('employees','empposts'));
+        return view('HR.to_nav', compact('employees','emppost'));
     }
 
     /*--------------------------------------------------------------
@@ -72,7 +71,7 @@ class TravelOrderController extends Controller
         $location = request('location');
         $remarks = request('remarks');
 
-        $employee_data = DB::table('employees')
+        /* $employee_data = DB::table('employees')
         ->select('employee_no', 'fullname')
         ->where('employee_no', $employee_name)
         ->first();
@@ -84,7 +83,7 @@ class TravelOrderController extends Controller
             $fullname = $employee_data->fullname; 
         }else{
             return back()->with('error','Please Select employee');
-        }
+        } */
 
         $getday = Carbon::parse($datesched)->format('d');
         $getmonth = Carbon::parse($datesched)->format('F');
@@ -97,6 +96,20 @@ class TravelOrderController extends Controller
         }
 
         try{
+
+            $employee_data = DB::table('employees')
+            ->select('employee_no', 'fullname')
+            ->where('employee_no', $employee_name)
+            ->first();
+
+            
+
+            if($employee_data != null && $obtype != null && $datesched != null){
+                $employee_no = $employee_data->employee_no; 
+                $fullname = $employee_data->fullname; 
+            }else{
+                return back()->with('error','Please Fillout the form!');
+            }
 
                 $filter = DB::table('obs')  
                 ->where("employee_no", "=", $employee_no)
@@ -217,26 +230,47 @@ class TravelOrderController extends Controller
     # DELETE TRAVELORDER
     --------------------------------------------------------------*/
 
-    public function delete_travel_order($id, $employee_no, $date_sched){
+    public function delete_travel_order($id, $employee_no, $date_sched)
+{
+    try {
         $tableName = 'obs';
-        $DTR = 'employee_attendance_posts';
-        $idToDelete = $id; 
+        /* $DTR = 'employee_attendance_posts'; */
         
-        $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
-        $DTRrecords = DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->exists();
+        $formatted_date = date('Y-m-d', strtotime($date_sched));
+        
+        DB::beginTransaction();
+        
+        $recordExists = DB::table($tableName)->where('id', $id)->exists();
+        /* $DTRrecords = DB::table($DTR)
+            ->where('employee_no', $employee_no)
+            ->where('date', $formatted_date)
+            ->exists(); */
 
-        
-        /* dd($DTRrecords); */
-        if ($recordExists && $DTRrecords) {
-            DB::table($tableName)->where('id', $idToDelete)->delete();
-            DB::table($DTR)->where('employee_no', $employee_no)->where('date', $date_sched)->delete();
+        /* if ($recordExists && $DTRrecords) { */
+        if ($recordExists) {
+            DB::table($tableName)->where('id', $id)->delete();
+            /* DB::table($DTR)
+                ->where('employee_no', $employee_no)
+                ->where('date', $formatted_date)
+                ->delete(); */
             
+            DB::commit();
             return response()->json(['message' => 'success']);
         } else {
-            return response()->json(['message' => 'fail']);
+            DB::rollBack();
+            return response()->json([
+                'message' => 'fail',
+                'reason' => 'Records not found'
+            ], 404);
         }
-
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return response()->json([
+            'message' => 'fail',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 
     /*--------------------------------------------------------------
     # UPDATE TRAVELORDER

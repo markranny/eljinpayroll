@@ -32,13 +32,13 @@ class CSController extends Controller
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
-        $empposts = DB::table('emp_posts')
-                    ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'DESC')
-                    ->limit(1)
-                    ->get();
+        $record = DB::table('numbersequences')
+                ->select('employeeattendanceid')
+                ->first();
+      
+        $emppost = $record ? str_pad($record->employeeattendanceid, 10, '0', STR_PAD_LEFT) : '0000000000';
 
-        return view('HR.changeoff_nav', compact('employees','empposts'));
+        return view('HR.changeoff_nav', compact('employees', 'emppost'));
     }
 
     /*--------------------------------------------------------------
@@ -143,44 +143,6 @@ class CSController extends Controller
                 $timesum2 = Carbon::parse($request->timeout)->format('H');
                 $timetotal = (int)$timesum2 - (int)$timesum1;
 
-                /* $updateattendance1 = "
-                insert into employee_attendance_posts(employeeattendanceid,employee_name,employee_no, date, day, in1, out2, hours_work, working_hour, totalhrsneeds, totalhrs, totalhrsearned, ctlate, minutes_late, udt, udt_hrs, nightdif, period, status) values('$employeeattendanceid','$employee_name','$employee_no', '$newdatesched', 'CHANGEOFF', '$timein', '$timeout', '$timetotal', '8.0','0','9','9','0','0','-','0.00','0','$getperiod','0')
-                ";
-                DB::statement($updateattendance1); */
-
-                    /* DB::table('employee_attendance_posts')->insert([
-                        'employeeattendanceid' => $employeeattendanceid,
-                        'employee_name' =>  $fullname,
-                        'employee_no' => $employee_no,
-                        'date' => $newdatesched,
-                        'day' => 'CHANGEOFF',
-                        'schedin' => '00:00:00.0000000',
-                        'schedout' => '00:00:00.0000000',
-                        'in1' => $timein,
-                        'out2' => $timeout,
-                        'hours_work' => $timetotal,
-                        'working_hour' => '8.0',
-                        'totalhrsneeds' => '0',
-                        'totalhrs' => '9',
-                        'totalhrsearned' => '9',
-                        'ctlate' => '0',
-                        'minutes_late' => '0',
-                        'udt' => '-',
-                        'udt_hrs' => '0',
-                        'nightdif' => '0',
-                        'period' => $getperiod,
-                        'status' => '0'
-                    ]);
-                
-
-                Log::info('Insert change off sched to employee_attendance_posts table');
-
-                $statuslogs = "
-                INSERT INTO statuslogs (linecode, functions, modifieddate) values ('ChangeOff', 'Insert change off sched to employee_attendance_posts table', getdate())
-                ";
-                DB::statement($statuslogs); */
-
-
                 $employees = DB::table('employees')
                         ->get();
 
@@ -216,9 +178,6 @@ class CSController extends Controller
 
             return back()->with('error','Data is already exist!');
         }
-    /* }else{
-        return back()->with('error','Employee dont have attendance!');
-    } */
 
     }
 
@@ -226,11 +185,12 @@ class CSController extends Controller
     # DELETE CHANGEOFF
     --------------------------------------------------------------*/
 
-    public function delete_changeoff($id, $date){
+    public function delete_changeoff($id, $employee_no, $new_working_schedule){
         
         $tableName = 'changeoffs';
         $DTR = 'employee_attendance_posts';
         $idToDelete = $id; 
+        $date = $new_working_schedule;
         /* $datesched = request('datesched'); */
         
         $recordExists = DB::table($tableName)->where('employee_no', $idToDelete)->exists();

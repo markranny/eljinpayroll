@@ -228,12 +228,14 @@
                   <p> Overtime </p>
                 </a>
               </li>
-                <li class="nav-item ">
+              
+                <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('offsetnav') }}">
                     <i class="material-icons">schedule</i>
                     <p> Offset</p>
                   </a>
-                </li>
+                </li> -->
+
                 <!-- <li class="nav-item ">
                   <a class="nav-link" href="{{ route('offset2nav') }}">
                     <i class="material-icons">schedule</i>

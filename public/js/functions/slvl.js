@@ -22,6 +22,9 @@ function loadData() {
 
     serverSide: true,
 
+    scrollX: true,
+    scrollY: "55vh",
+
     dom: 'lBfrtp',
 
     buttons: [ 'csv', 'excel', 'pdf', 'print' ],

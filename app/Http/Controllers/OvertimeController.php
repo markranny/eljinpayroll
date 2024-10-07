@@ -35,14 +35,20 @@ class OvertimeController extends Controller
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
-        $empposts = DB::table('emp_posts')
+        /* $empposts = DB::table('emp_posts')
                     ->select('employeeattendanceid')
                     ->where('status','=','0')
                     ->orderBy('employeeattendanceid', 'DESC')
                     ->limit(1)
-                    ->get();
+                    ->get(); */
+
+        $record = DB::table('numbersequences')
+              ->select('employeeattendanceid')
+              ->first();
+
+        $emppost = $record ? str_pad($record->employeeattendanceid, 10, '0', STR_PAD_LEFT) : '0000000000';
                     
-    return view('HR.overtime_nav', compact('employees', 'empposts'));
+    return view('HR.overtime_nav', compact('employees', 'emppost'));
 }
 
     /*--------------------------------------------------------------
@@ -53,13 +59,20 @@ class OvertimeController extends Controller
     {
                 $overtimes = DB::table('overtimes')
                 ->join('employees', 'overtimes.employee_no', '=', 'employees.employee_no')
-                /* ->select(DB::raw('CONCAT(employees.firstname, ", ", employees.lastname) as fullname'),'overtimes.*') */
                 ->select('employees.fullname', 'overtimes.*')
-                /* ->select(DB::raw('CONCAT(employees.firstname, ", ", employees.lastname) as firstname'), 'overtimes.*') */
                 ->orderBy('working_schedule', 'DESC')
                 ->get();
 
+                /* return DataTables::of($overtimes)
+                ->make(true); */
+
                 return DataTables::of($overtimes)
+                ->editColumn('ot_in', function($row) {
+                    return Carbon::parse($row->ot_in)->format('g:i A');
+                })
+                ->editColumn('ot_out', function($row) {
+                    return Carbon::parse($row->ot_out)->format('g:i A');
+                })
                 ->make(true);
     }
 
@@ -72,8 +85,6 @@ class OvertimeController extends Controller
         $timeout = request('timeout');
         $remarks = request('remarks');
         $ottypes = request('ottypes');
-
-        
 
         $employee_data = DB::table('employees')
         ->select('employee_no', 'fullname')

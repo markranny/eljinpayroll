@@ -9,7 +9,7 @@ $(function () {
     var table = $('#att').DataTable({
         processing: true,
         scrollX: true,
-        scrollY: "400px",
+        scrollY: "55vh",
         scrollCollapse: true,
         lengthMenu: [[10, 20, 100, -1], [10, 20, 100, "All"]],
         dom: 'lBfrtip',

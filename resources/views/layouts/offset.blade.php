@@ -142,7 +142,7 @@
 			</div>
 		</div>
 
-        <div class="container modal-sm" id="iddetector2" style="display:none">
+        <!-- <div class="container modal-sm" id="iddetector2" style="display:none">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" style="font-weight: bold">OFFSET INFO!</h5>
@@ -153,7 +153,8 @@
                     <h6 style="color:red">Please Create Payroll Code First!</h6>
                 </div>
 		    </div>
-        </div>
+        </div> -->
+
 	</div>
 </div>
 

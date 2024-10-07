@@ -146,12 +146,13 @@ Route::post('/update/overtime/', 'OvertimeController@update_overtime')->name('up
     # CHANGE OFF
 --------------------------------------------------------------*/
 Route::get('changeoff-page', 'CSController@changeoffnav')->name('changeoffnav')->middleware('is_hr');
-Route::get('/delete/changeoff/{id}/{date}', 'CSController@delete_changeoff')->name('delete_changeoff')->middleware('is_hr');
+Route::get('/delete/changeoff/{id}/{employee_no}/{new_working_schedule}', 'CSController@delete_changeoff')->name('delete_changeoff')->middleware('is_hr');
 Route::post('/update/changeoff/', 'CSController@update_changeoff')->name('update_changeoff')->middleware('is_hr');
 Route::get('/changeoff-page/{employee_no}','CSController@getEmp');
 Route::get('changeoff-list', 'CSController@changeoffdata')->name('changeoffdata')->middleware('is_hr');
 Route::post('add-schedule', 'CSController@addsched')->name('addsched')->middleware('is_hr');
 Route::post('verify', 'CSController@addsched')->name('verify')->middleware('is_hr');
+
 
 /*--------------------------------------------------------------
     # OFFSET - HRS
@@ -203,7 +204,13 @@ Route::get('send-payslip/{employee_no}', 'HomeController@sendpayslip')->name('se
     # TRAVEL ORDER
 --------------------------------------------------------------*/
 Route::get('travel-order-page', 'TravelOrderController@tonav')->name('tonav');
-Route::get('/delete/travel_order/{id}/{employee_no}/{date_sched}', 'TravelOrderController@delete_travel_order')->name('delete_travel_order')->middleware('is_hr');
+Route::get('/delete/travelorder/{id}/{employee_no}/{date_sched}', 'TravelOrderController@delete_travel_order')->name('delete_travel_order')->middleware('is_hr');
+
+/* Route::get('/delete/travelorder/{id}/{employee_no}/{date_sched}', 
+    [TravelOrderController::class, 'delete_travel_order'])
+    ->name('delete_travel_order')
+    ->middleware('is_hr'); */
+    
 Route::post('/update/travel_order/', 'TravelOrderController@update_travel_order')->name('update_travel_order')->middleware('is_hr');
 Route::get('travel-order-list', 'TravelOrderController@todata')->name('todata');
 Route::post('add-travel-order', 'TravelOrderController@addto')->name('addto');  

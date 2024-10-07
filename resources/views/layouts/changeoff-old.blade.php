@@ -1,5 +1,3 @@
-
-
     <div class="float-right">
         <button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">ADD CHANGE OFF</button>
     </div>
@@ -26,14 +24,14 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </div>
+
 
 @include('modals.changeoff');
 
 <script type="text/javascript" src="{{asset('js/functions/changeoff.js')}}">
 </script>
 
-            
+

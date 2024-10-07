@@ -67,7 +67,7 @@ function loadData() {
                 searchable: false,
                 render: function (data, type, full, meta) {
                     return `
-                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${full.employee_no}, '${full.new_working_schedule}')">DELETE</button>    
+                    <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deleteModal" onclick="setDeleteButton(${data}, ${full.employee_no}, '${full.new_working_schedule}')">DELETE</button>    
                     `;
                 }
             } 
@@ -78,9 +78,9 @@ function loadData() {
 }
 
 
-function setDeleteButton(id, date){
+function setDeleteButton(id, employee_no, new_working_schedule){
     $("#delete-footer").html(`
-    <button class="btn btn-danger btn-sm mr-1" data-dismiss="modal" onclick="deleteChangeOff(${id}, '${date}')">Delete</button>   
+    <button class="btn btn-danger btn-sm mr-1 " data-dismiss="modal" onclick="deleteChangeOff(${id}, '${employee_no}', '${new_working_schedule}')">Delete</button>   
     <button class="btn btn-primary btn-sm" data-dismiss="modal">Cancel</button>
     `);
 }
@@ -195,9 +195,9 @@ $(document).ready(function() {
         });
 });
 
-function deleteChangeOff(id, date){
+function deleteChangeOff(id, employee_no,new_working_schedule){
     $.ajax({
-            url: "/delete/changeoff/"+id+"/"+date, 
+            url: "/delete/changeoff/"+id+'/'+employee_no+'/'+new_working_schedule, 
             type: "GET",
             dataType: "json",
             success: function(response) {

@@ -33,14 +33,13 @@ class SlvlController extends Controller
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
-                    $empposts = DB::table('emp_posts')
+                    $record = DB::table('numbersequences')
                     ->select('employeeattendanceid')
-                    ->where('status','=','0')
-                    ->orderBy('employeeattendanceid', 'DESC')
-                    ->limit(1)
-                    ->get();
+                    ->first();
+      
+              $emppost = $record ? str_pad($record->employeeattendanceid, 10, '0', STR_PAD_LEFT) : '0000000000';
 
-        return view('HR.slvl_nav', compact('employees','empposts'));
+        return view('HR.slvl_nav', compact('employees','emppost'));
     }
 
     /*--------------------------------------------------------------
