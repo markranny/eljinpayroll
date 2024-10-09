@@ -33,7 +33,7 @@ function loadData() {
 
             {data: 'employee_no', name: 'employee_no'},
 
-            {data: 'firstname', name: 'firstname'},
+            {data: 'fullname', name: 'fullname'},
 
             {data: 'working_schedule', name: 'working_schedule'},
 

@@ -31,13 +31,13 @@ class CTController extends Controller
                     ->orderBy('lastname', 'ASC')
                     ->get();
 
-                    $empposts = DB::table('emp_posts')
-                    ->select('employeeattendanceid')
-                    ->orderBy('employeeattendanceid', 'DESC')
-                    ->limit(1)
-                    ->get();
+        $record = DB::table('numbersequences')
+        ->select('employeeattendanceid')
+        ->first();
+          
+        $emppost = $record ? str_pad($record->employeeattendanceid, 10, '0', STR_PAD_LEFT) : '0000000000';
 
-        return view('HR.changetime_nav', compact('employees','empposts'));
+        return view('HR.changetime_nav', compact('employees','emppost'));
     }
 
     /*--------------------------------------------------------------
@@ -50,9 +50,18 @@ class CTController extends Controller
     public function changetimedata(Request $request)
     {
                 $changetimes = DB::table('changetimes')
+                ->join('employees', 'changetimes.employee_no', '=', 'employees.employee_no')
+                ->select('employees.fullname', 'changetimes.*')
+                ->orderBy('date', 'DESC')
                 ->get();
 
                 return DataTables::of($changetimes)
+                ->editColumn('in1', function($row) {
+                    return Carbon::parse($row->in1)->format('g:i A');
+                })
+                ->editColumn('out1', function($row) {
+                    return Carbon::parse($row->out1)->format('g:i A');
+                })
                 ->make(true);
     }
 

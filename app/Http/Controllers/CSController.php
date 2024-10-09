@@ -52,11 +52,17 @@ class CSController extends Controller
     {
                 $changeoffs = DB::table('changeoffs')
                 ->join('employees', 'changeoffs.employee_no', '=', 'employees.employee_no')
-                ->select('employees.firstname', 'changeoffs.*')
+                ->select('employees.fullname', 'changeoffs.*')
                 ->orderBy('working_schedule', 'DESC')
                 ->get();
 
                 return DataTables::of($changeoffs)
+                ->editColumn('time_in', function($row) {
+                    return Carbon::parse($row->time_in)->format('g:i A');
+                })
+                ->editColumn('time_out', function($row) {
+                    return Carbon::parse($row->time_out)->format('g:i A');
+                })
                 ->make(true);
     }
 
@@ -187,22 +193,37 @@ class CSController extends Controller
 
     public function delete_changeoff($id, $employee_no, $new_working_schedule){
         
-        $tableName = 'changeoffs';
-        $DTR = 'employee_attendance_posts';
-        $idToDelete = $id; 
-        $date = $new_working_schedule;
-        /* $datesched = request('datesched'); */
-        
-        $recordExists = DB::table($tableName)->where('employee_no', $idToDelete)->exists();
-        $DTRrecords = DB::table($DTR)->where('employee_no', $idToDelete)->where('date', $date)->exists();
-
-        if ($recordExists && $DTRrecords) {
-            DB::table($tableName)->where('employee_no', $idToDelete)->delete();
-            DB::table($DTR)->where('employee_no', $idToDelete)->where('date', $date)->delete();
+        try {
+            $tableName = 'changeoffs';
+            /* $DTR = 'employee_attendance_posts'; */
             
-            return response()->json(['message' => 'success']);
-        } else {
-            return response()->json(['message' => 'fail']);
+            $formatted_date = date('Y-m-d', strtotime($new_working_schedule));
+            
+            DB::beginTransaction();
+            
+            $recordExists = DB::table($tableName)->where('id', $id)->exists();
+            /* $DTRrecords = DB::table($DTR)->where('employee_no', $idToDelete)->where('date', $date)->exists(); */
+    
+            /* if ($recordExists && $DTRrecords) { */
+            if ($recordExists) {
+                DB::table($tableName)->where('id', $id)->delete();
+                /* DB::table($DTR)->where('employee_no', $idToDelete)->where('date', $date)->delete(); */
+                
+                DB::commit();
+                return response()->json(['message' => 'success']);
+            } else {
+                DB::rollBack();
+                return response()->json([
+                    'message' => 'fail',
+                    'reason' => 'Records not found'
+                ], 404);
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'fail',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

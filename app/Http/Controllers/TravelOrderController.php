@@ -48,12 +48,12 @@ class TravelOrderController extends Controller
     --------------------------------------------------------------*/ 
     public function todata(Request $request)
     {
+
                 $obs = DB::table('obs')
                 ->join('employees', 'obs.employee_no', '=', 'employees.employee_no')
-                ->select('employees.firstname', 'obs.*')
+                ->select('employees.fullname', 'obs.*')
                 ->orderBy('date_sched', 'DESC')
                 ->get();
-
                 return DataTables::of($obs)
                 ->make(true);
     }

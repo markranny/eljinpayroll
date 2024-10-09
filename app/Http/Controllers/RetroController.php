@@ -114,7 +114,22 @@ class RetroController extends Controller
         }else{
             return back()->with('error','Data is already exist!');
         }
+    }
 
+    public function delete_retro($id){
+        
+        $tableName = 'retros';
+        $idToDelete = $id; 
+        /* $datesched = request('datesched'); */
+        
+        $recordExists = DB::table($tableName)->where('id', $idToDelete)->exists();
 
+        if ($recordExists) {
+            DB::table($tableName)->where('id', $idToDelete)->delete();
+            
+            return response()->json(['message' => 'success']);
+        } else {
+            return response()->json(['message' => 'fail']);
+        }
     }
 }

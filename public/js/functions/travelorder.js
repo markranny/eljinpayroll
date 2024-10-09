@@ -36,7 +36,7 @@ function loadData() {
 
             {data: 'employee_no', name: 'employee_no'},
 
-            {data: 'firstname', name: 'firstname'},
+            {data: 'fullname', name: 'fullname'},
 
             {data: 'date_sched', name: 'date_sched'},
 

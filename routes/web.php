@@ -153,6 +153,23 @@ Route::get('changeoff-list', 'CSController@changeoffdata')->name('changeoffdata'
 Route::post('add-schedule', 'CSController@addsched')->name('addsched')->middleware('is_hr');
 Route::post('verify', 'CSController@addsched')->name('verify')->middleware('is_hr');
 
+/*--------------------------------------------------------------
+    # CHANGE TIME
+--------------------------------------------------------------*/
+Route::get('changetime-page', 'CTController@changetimenav')->name('changetimenav')->middleware('is_hr');
+Route::get('/delete/changetime/{id}/{employee_no}/{date}', 'CTController@delete_changetime')->name('delete_changetime')->middleware('is_hr');
+Route::post('/update/changetime/', 'CTController@update_changetime')->name('update_changetime')->middleware('is_hr');
+Route::get('changetime-list', 'CTController@changetimedata')->name('changetimedata')->middleware('is_hr');
+Route::post('changetime', 'CTController@changetime')->name('changetime')->middleware('is_hr');
+
+/*--------------------------------------------------------------
+    # RETRO
+--------------------------------------------------------------*/
+Route::get('retro-page', 'RetroController@retronav')->name('retronav');
+Route::get('retro-list', 'RetroController@retrodata')->name('retrodata');
+Route::post('add-addretro', 'RetroController@deleteretro')->name('addretro');
+Route::get('/delete/retro/{id}', 'RetroController@delete_retro')->name('delete_retro')->middleware('is_hr');
+
 
 /*--------------------------------------------------------------
     # OFFSET - HRS
@@ -214,22 +231,6 @@ Route::get('/delete/travelorder/{id}/{employee_no}/{date_sched}', 'TravelOrderCo
 Route::post('/update/travel_order/', 'TravelOrderController@update_travel_order')->name('update_travel_order')->middleware('is_hr');
 Route::get('travel-order-list', 'TravelOrderController@todata')->name('todata');
 Route::post('add-travel-order', 'TravelOrderController@addto')->name('addto');  
-
-/*--------------------------------------------------------------
-    # RETRO
---------------------------------------------------------------*/
-Route::get('retro-page', 'RetroController@retronav')->name('retronav');
-Route::get('retro-list', 'RetroController@retrodata')->name('retrodata');
-Route::post('add-addretro', 'RetroController@addretro')->name('addretro');
-
-/*--------------------------------------------------------------
-    # CHANGE TIME
---------------------------------------------------------------*/
-Route::get('changetime-page', 'CTController@changetimenav')->name('changetimenav')->middleware('is_hr');
-Route::get('/delete/changetime/{id}', 'CTController@delete_changetime')->name('delete_changetime')->middleware('is_hr');
-Route::post('/update/changetime/', 'CTController@update_changetime')->name('update_changetime')->middleware('is_hr');
-Route::get('changetime-list', 'CTController@changetimedata')->name('changetimedata')->middleware('is_hr');
-Route::post('changetime', 'CTController@changetime')->name('changetime')->middleware('is_hr');
 
 /*--------------------------------------------------------------
     # DASHBOARD

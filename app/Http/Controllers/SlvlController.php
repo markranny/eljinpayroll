@@ -51,13 +51,12 @@ class SlvlController extends Controller
 
     public function slvldata(Request $request)
     {
+                
                 $slvls = DB::table('slvls')
                 ->join('employees', 'slvls.employee_no', '=', 'employees.employee_no')
-                /* ->select(DB::raw('CONCAT(employees.firstname, ", ", employees.lastname) as fullname'),'overtimes.*') */
-                ->select('employees.firstname', 'slvls.*')
+                ->select('employees.fullname', 'slvls.*')
                 ->orderBy('date_sched', 'DESC')
                 ->get();
-
                 return DataTables::of($slvls)
                 ->make(true);
     }
